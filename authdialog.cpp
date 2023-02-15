@@ -41,6 +41,7 @@ void AuthDialog::accept() {
     QVariantMap map;
     map["key"] = ui->leKey->text();
     map["pin"] = ui->lePin->text();
+    map["device"] = "test";
     m_client->request("/auth", "GET", map);
 
     /// TODO wait
@@ -64,7 +65,8 @@ void AuthDialog::success(const QJsonObject &obj) {
 
 void AuthDialog::error(const QJsonObject &obj) {
     QString e = obj.value("error").toString();
-    ui->lError->setText(e);
+    QString ref = obj.value("ref").toString();
+    ui->lError->setText(ref);
 }
 
 void AuthDialog::on_pbRequestKey_clicked() {
