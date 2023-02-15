@@ -1,0 +1,2 @@
+# libSekura
+Common library Sekura
