@@ -22,9 +22,17 @@ message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
 message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
 include_directories(${OPENSSL_INCLUDE_DIR})
 
-
-add_library(libSekura STATIC sekura.cpp sekura.h restclient.h restclient.cpp
-                             restsettings.h restsettings.cpp)
+add_library(
+  libSekura STATIC
+  sekura.cpp
+  sekura.h
+  restclient.h
+  restclient.cpp
+  restsettings.h
+  restsettings.cpp
+  authdialog.h
+  authdialog.cpp
+  authdialog.ui)
 
 target_link_libraries(
   libSekura

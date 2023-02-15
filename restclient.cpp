@@ -15,27 +15,27 @@
 using namespace Sekura;
 
 RestClient::RestClient(QObject *parent) : QObject(parent) {
-    _settings = nullptr;
-    manager = new QNetworkAccessManager(this);
+    m_settings = nullptr;
+    m_manager = new QNetworkAccessManager(this);
 }
 
 RestClient::RestClient(RestSettings *settings, QObject *parent)
-    : QObject(parent), _settings(settings) {
-    manager = new QNetworkAccessManager(this);
+    : QObject(parent), m_settings(settings) {
+    m_manager = new QNetworkAccessManager(this);
 }
 
 void RestClient::request(const QString &requestString, const QString &type,
                          const QVariantMap &body) {
     QNetworkRequest request;
-    QString url = (_settings ? _settings->path() : "") + requestString;
+    QString url = (m_settings ? m_settings->path() : "") + requestString;
     request.setUrl(QUrl(url));
-    if (_settings) {
-        const QByteArrayMap &map = _settings->headers();
+    if (m_settings) {
+        const QByteArrayMap &map = m_settings->headers();
         for (QByteArrayMap::ConstIterator it = map.constBegin(); it != map.constEnd(); ++it) {
             request.setRawHeader(it.key().toUtf8(), it.value());
         }
-        if (_settings->sslConfig() != nullptr) {
-            request.setSslConfiguration(*(_settings->sslConfig()));
+        if (m_settings->sslConfig() != nullptr) {
+            request.setSslConfiguration(*(m_settings->sslConfig()));
         }
     }
     QNetworkReply *reply = nullptr;
@@ -50,10 +50,10 @@ void RestClient::request(const QString &requestString, const QString &type,
         QBuffer *buff = new QBuffer;
         buff->setData(bodyArray);
         buff->open(QIODevice::ReadOnly);
-        reply = manager->sendCustomRequest(request, type.toUtf8(), buff);
+        reply = m_manager->sendCustomRequest(request, type.toUtf8(), buff);
         buff->setParent(reply);
     } else if (type == "POST") {
-        reply = manager->post(request, bodyArray);
+        reply = m_manager->post(request, bodyArray);
     } else {
         /// TODO make error
         reply = nullptr;

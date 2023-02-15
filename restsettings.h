@@ -20,14 +20,23 @@ namespace Sekura {
             QSslConfiguration *sslConfig READ sslConfig WRITE setSslConfig NOTIFY sslConfigChanged)
       public:
         explicit RestSettings(QObject *parent = nullptr);
+        explicit RestSettings(const RestSettings &copy);
+
+        bool load(const QString &name = "");
+        void save(const QString &name = "");
 
         QString path() const;
         void setPath(const QString &newPath);
 
         const QByteArrayMap &headers() const { return m_headers; }
+        const QByteArrayMap &data() const { return m_data; }
         const QByteArray headerValue(const QString &key) const { return m_headers[key]; }
+        const QByteArray dataValue(const QString &key) const { return m_data[key]; }
 
         void setHeaderValue(const QString &key, const QByteArray &val);
+        void setDataValue(const QString &key, const QByteArray &val);
+        void setHeaders(const QByteArrayMap &header);
+        void setData(const QByteArrayMap &data);
 
         QSslConfiguration *sslConfig() const;
         void setSslConfig(QSslConfiguration *newSslConfig);
@@ -41,7 +50,11 @@ namespace Sekura {
       private:
         QString m_path;
         QByteArrayMap m_headers;
+        QByteArrayMap m_data;
+        QString m_name;
         QSslConfiguration *m_sslConfig = nullptr;
+
+        virtual QByteArray mCompress(const QByteArray &arr, bool direct = false);
     };
 
     /*

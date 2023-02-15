@@ -30,8 +30,8 @@ namespace Sekura {
         void error(const QJsonObject &);
 
       private:
-        RestSettings *_settings;
-        QNetworkAccessManager *manager;
+        RestSettings *m_settings;
+        QNetworkAccessManager *m_manager;
     };
 
 } // namespace Sekura

@@ -12,8 +12,14 @@ namespace Sekura {
 
     class RestSettings;
     class RestClient;
+    class AuthDialog;
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
+
+    class Interface {
+      public:
+        static QString genUFID();
+    };
 
 }; // namespace Sekura
 
