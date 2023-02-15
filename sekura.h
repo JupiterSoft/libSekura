@@ -6,10 +6,10 @@
 #ifndef SEKURA_H
 #define SEKURA_H
 
-class Sekura
-{
-public:
-    Sekura();
+namespace Sekura {
+
+    class RESTClient;
+
 };
 
 #endif // SEKURA_H

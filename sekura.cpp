@@ -4,7 +4,3 @@
  * Company: Jupiter Soft
  */
 #include "sekura.h"
-
-Sekura::Sekura()
-{
-}
