@@ -6,10 +6,15 @@
 #ifndef SEKURA_H
 #define SEKURA_H
 
+#include <QMap>
+
 namespace Sekura {
 
-    class RESTClient;
+    class RestSettings;
+    class RestClient;
 
-};
+    typedef QMap<QString, QByteArray> QByteArrayMap;
+
+}; // namespace Sekura
 
 #endif // SEKURA_H
