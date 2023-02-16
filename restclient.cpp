@@ -77,6 +77,7 @@ void RestClient::request(const QString &requestString, const QString &type,
                 if ((replyError == QNetworkReply::NoError) && ((code >= 200) && (code < 300))) {
                     emit this->success(obj);
                 } else {
+                    /// TODO вставить удаления токена авторизации по коду ошибки ответа!!
                     obj["NetworkError"] = reply->errorString();
                     emit this->error(obj);
                 }

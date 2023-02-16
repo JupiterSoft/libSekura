@@ -10,6 +10,7 @@
 #include "restsettings.h"
 
 #include <QJsonObject>
+#include <QSysInfo>
 
 using namespace Sekura;
 
@@ -40,8 +41,9 @@ void AuthDialog::accept() {
 
     QVariantMap map;
     map["key"] = ui->leKey->text();
-    map["pin"] = ui->lePin->text();
-    map["device"] = "test";
+    map["pin"] =
+        QCryptographicHash::hash(ui->lePin->text().toUtf8(), QCryptographicHash::Sha256).toBase64();
+    map["device_name"] = QSysInfo::machineHostName();
     m_client->request("/auth", "GET", map);
 
     /// TODO wait

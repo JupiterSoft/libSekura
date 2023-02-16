@@ -31,6 +31,7 @@ namespace Sekura {
         const QByteArrayMap &headers() const { return m_headers; }
         const QByteArrayMap &data() const { return m_data; }
         const QByteArray headerValue(const QString &key) const { return m_headers[key]; }
+        void removeHeaderValue(const QString &key) { m_headers.remove(key); }
         const QByteArray dataValue(const QString &key) const { return m_data[key]; }
 
         void setHeaderValue(const QString &key, const QByteArray &val);
