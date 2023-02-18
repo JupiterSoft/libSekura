@@ -13,6 +13,7 @@ namespace Sekura {
     class RestSettings;
     class RestClient;
     class AuthDialog;
+    class AbstractTableModel;
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
 

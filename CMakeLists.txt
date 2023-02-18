@@ -32,7 +32,10 @@ add_library(
   restsettings.cpp
   authdialog.h
   authdialog.cpp
-  authdialog.ui)
+  authdialog.ui
+  abstracttablemodel.h
+  abstracttablemodel.cpp
+)
 
 target_link_libraries(
   libSekura
