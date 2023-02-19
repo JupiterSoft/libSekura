@@ -24,6 +24,8 @@ namespace Sekura {
                             int role = Qt::DisplayRole) const override;
 
         QString code(const QModelIndex &index) const;
+        virtual void reload() = 0;
+        virtual void remove(const QModelIndex &index) = 0;
 
       protected slots:
         virtual void success(const QJsonObject &) = 0;

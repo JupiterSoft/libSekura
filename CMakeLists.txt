@@ -26,8 +26,10 @@ add_library(
   libSekura STATIC
   sekura.cpp
   sekura.h
+  RestClient
   restclient.h
   restclient.cpp
+  RestSettings
   restsettings.h
   restsettings.cpp
   authdialog.h
