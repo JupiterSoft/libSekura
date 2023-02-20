@@ -16,6 +16,24 @@ TableModel::TableModel(const QString &model, RestSettings *settings, QObject *pa
     connect(m_client, &RestClient::success, this, &TableModel::success);
     connect(m_client, &RestClient::error, this, &TableModel::error);
     m_viewCode = false;
+    m_initialized = false;
+    QVariantMap map;
+    map["transaction"] = "model";
+    map["model"] = m_model;
+    map["type"] = "table";
+    m_client->request("/model", "GET", map);
+}
+
+TableModel::TableModel(const QString &model, RestSettings *settings, const QVariantMap &filter,
+                       QObject *parent)
+    : QAbstractTableModel{parent} {
+    m_model = model;
+    m_filter = filter;
+    m_client = new RestClient(settings, this);
+    connect(m_client, &RestClient::success, this, &TableModel::success);
+    connect(m_client, &RestClient::error, this, &TableModel::error);
+    m_viewCode = false;
+    m_initialized = false;
     QVariantMap map;
     map["transaction"] = "model";
     map["model"] = m_model;
@@ -84,6 +102,16 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
     return QVariant();
 }
 
+int TableModel::stretchField() const {
+    int ret = 0;
+    foreach (QString str, m_view_data) {
+        if (str == m_stretch)
+            return ret;
+        ret++;
+    }
+    return -1;
+}
+
 QString TableModel::code(const QModelIndex &index) const {
     int row = index.row();
     if (row < m_codes.size())
@@ -97,8 +125,21 @@ void TableModel::reload() {
     q["table"] = m_model;
     q["name"] = m_model;
     q["fields"] = m_fields;
-    /// TODO set filter
-    /// TODO set variables
+    if (!m_filter.isEmpty()) {
+        /// TODO set filter
+        QString str;
+        bool first = true;
+        for (QVariantMap::Iterator it = m_filter.begin(); it != m_filter.end(); ++it) {
+            if (first)
+                first = false;
+            else
+                str += " AND ";
+            str += it.key() + " = :" + it.key();
+        }
+        q["filter"] = str;
+        /// TODO set variables
+        q["variables"] = m_filter;
+    }
     req["queries"] = QVariant(QVariantList() << q);
     req["transaction"] = "refresh";
     m_client->request("/query", "GET", req);
@@ -144,6 +185,9 @@ void TableModel::success(const QJsonObject &obj) {
         foreach (QVariant v, lst)
             m_view_data.append(v.toString());
         reload();
+        m_stretch = data["stretch"].toString();
+        m_buttons = data["buttons"].toList();
+        emit initialized();
         emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount() - 1);
     }
 }
