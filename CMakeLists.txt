@@ -37,6 +37,9 @@ add_library(
   authdialog.ui
   abstracttablemodel.h
   abstracttablemodel.cpp
+  tablemodel.h
+  tablemodel.cpp
+  TableModel
 )
 
 target_link_libraries(
