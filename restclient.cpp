@@ -19,7 +19,7 @@ RestClient::RestClient(QObject *parent) : QObject(parent) {
     m_manager = new QNetworkAccessManager(this);
 }
 
-RestClient::RestClient(RestSettings *settings, QObject *parent)
+RestClient::RestClient(const RestSettings *settings, QObject *parent)
     : QObject(parent), m_settings(settings) {
     m_manager = new QNetworkAccessManager(this);
 }

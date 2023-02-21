@@ -8,7 +8,9 @@
 
 using namespace Sekura;
 
-SpinBox::SpinBox(QWidget *parent) : QWidget(parent), ui(new Ui::SpinBox) { ui->setupUi(this); }
+SpinBox::SpinBox(int type, QWidget *parent) : BaseItem(type, parent), ui(new Ui::SpinBox) {
+    ui->setupUi(this);
+}
 
 SpinBox::~SpinBox() { delete ui; }
 
@@ -17,8 +19,8 @@ void SpinBox::setMinMax(int min, int max) {
     ui->spinBox->setMaximum(max);
 }
 
-void SpinBox::setValue(int val) { ui->spinBox->setValue(val); }
+void SpinBox::setValue(const QVariant &val) { ui->spinBox->setValue(val.toInt()); }
 
 void SpinBox::setCaption(const QString &str) { ui->label->setText(str); }
 
-int SpinBox::value() const { return ui->spinBox->value(); }
+QVariant SpinBox::value() const { return ui->spinBox->value(); }

@@ -41,6 +41,9 @@ add_library(
   tablemodel.cpp
   TableModel
   Sekura
+  baseitem.h
+  baseitem.cpp
+  BaseItem
   lineedit.h
   lineedit.cpp
   lineedit.ui
@@ -57,6 +60,10 @@ add_library(
   spinbox.cpp
   spinbox.ui
   SpinBox
+  tablewidget.h
+  tablewidget.cpp
+  tablewidget.ui
+  TableWidget
 )
 
 target_link_libraries(

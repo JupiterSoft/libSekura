@@ -14,9 +14,9 @@ namespace Sekura {
     class TableModel : public QAbstractTableModel {
         Q_OBJECT
       public:
-        explicit TableModel(const QString &model, RestSettings *settings,
+        explicit TableModel(const QString &model, const RestSettings *settings,
                             QObject *parent = nullptr);
-        TableModel(const QString &model, RestSettings *settings, const QVariantMap &filter,
+        TableModel(const QString &model, const RestSettings *settings, const QVariantMap &filter,
                    QObject *parent = nullptr);
         ~TableModel();
 

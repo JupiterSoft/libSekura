@@ -15,9 +15,12 @@ namespace Sekura {
     class AuthDialog;
     class AbstractTableModel;
     class TableModel;
+    class BaseItem;
     class LineEdit;
     class DateTimeEdit;
     class ComboBox;
+    class SpinBox;
+    class TableWidget;
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
 

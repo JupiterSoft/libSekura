@@ -6,6 +6,7 @@
 #ifndef SEKURA_LINEEDIT_H
 #define SEKURA_LINEEDIT_H
 
+#include "baseitem.h"
 #include <QWidget>
 
 namespace Sekura {
@@ -14,24 +15,22 @@ namespace Sekura {
         class LineEdit;
     }
 
-    class LineEdit : public QWidget {
+    class LineEdit : public BaseItem {
         Q_OBJECT
 
       public:
         explicit LineEdit(int type = 0, QWidget *parent = nullptr);
         ~LineEdit();
 
-        void setText(const QString &str);
-        QString text() const;
-        void setCaption(const QString &str);
-        void setBlock(bool t);
+        void setValue(const QVariant &val) override;
+        QVariant value() const override;
+        void setCaption(const QString &str) override;
 
-      signals:
-        void buttonClicked();
+      protected:
+        void setBlock(bool t);
 
       private:
         Ui::LineEdit *ui;
-        int m_type;
     };
 
 } // namespace Sekura

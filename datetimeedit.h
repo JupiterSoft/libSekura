@@ -6,6 +6,7 @@
 #ifndef SEKURA_DATETIMEEDIT_H
 #define SEKURA_DATETIMEEDIT_H
 
+#include "baseitem.h"
 #include <QWidget>
 
 namespace Sekura {
@@ -14,16 +15,16 @@ namespace Sekura {
         class DateTimeEdit;
     }
 
-    class DateTimeEdit : public QWidget {
+    class DateTimeEdit : public BaseItem {
         Q_OBJECT
 
       public:
-        explicit DateTimeEdit(QWidget *parent = nullptr);
+        explicit DateTimeEdit(int type = 0, QWidget *parent = nullptr);
         ~DateTimeEdit();
 
-        void setValue(const QDateTime &dt);
-        QDateTime value() const;
-        void setCaption(const QString &str);
+        void setValue(const QVariant &dt) override;
+        QVariant value() const override;
+        void setCaption(const QString &str) override;
 
       private:
         Ui::DateTimeEdit *ui;

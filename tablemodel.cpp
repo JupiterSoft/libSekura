@@ -9,7 +9,7 @@
 
 using namespace Sekura;
 
-TableModel::TableModel(const QString &model, RestSettings *settings, QObject *parent)
+TableModel::TableModel(const QString &model, const RestSettings *settings, QObject *parent)
     : QAbstractTableModel{parent} {
     m_model = model;
     m_client = new RestClient(settings, this);
@@ -24,8 +24,8 @@ TableModel::TableModel(const QString &model, RestSettings *settings, QObject *pa
     m_client->request("/model", "GET", map);
 }
 
-TableModel::TableModel(const QString &model, RestSettings *settings, const QVariantMap &filter,
-                       QObject *parent)
+TableModel::TableModel(const QString &model, const RestSettings *settings,
+                       const QVariantMap &filter, QObject *parent)
     : QAbstractTableModel{parent} {
     m_model = model;
     m_filter = filter;

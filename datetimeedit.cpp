@@ -8,14 +8,15 @@
 
 using namespace Sekura;
 
-DateTimeEdit::DateTimeEdit(QWidget *parent) : QWidget(parent), ui(new Ui::DateTimeEdit) {
+DateTimeEdit::DateTimeEdit(int type, QWidget *parent)
+    : BaseItem(type, parent), ui(new Ui::DateTimeEdit) {
     ui->setupUi(this);
 }
 
 DateTimeEdit::~DateTimeEdit() { delete ui; }
 
-void DateTimeEdit::setValue(const QDateTime &dt) { ui->dateTimeEdit->setDateTime(dt); }
+void DateTimeEdit::setValue(const QVariant &dt) { ui->dateTimeEdit->setDateTime(dt.toDateTime()); }
 
-QDateTime DateTimeEdit::value() const { return ui->dateTimeEdit->dateTime(); }
+QVariant DateTimeEdit::value() const { return ui->dateTimeEdit->dateTime(); }
 
 void DateTimeEdit::setCaption(const QString &str) { ui->label->setText(str); }

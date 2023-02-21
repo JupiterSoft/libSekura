@@ -11,9 +11,8 @@
 
 namespace Sekura {
 
-    LineEdit::LineEdit(int type, QWidget *parent) : QWidget(parent), ui(new Ui::LineEdit) {
+    LineEdit::LineEdit(int type, QWidget *parent) : BaseItem(type, parent), ui(new Ui::LineEdit) {
         ui->setupUi(this);
-        m_type = type;
         switch (m_type) {
         case 0:
             ui->pushButton->setVisible(false);
@@ -34,16 +33,17 @@ namespace Sekura {
             break;
         case 3:
             // ...
-            connect(ui->pushButton, &QPushButton::clicked, this, &LineEdit::buttonClicked);
+            connect(ui->pushButton, &QPushButton::clicked, this,
+                    [=]() { emit valueChanged(QVariant()); });
             break;
         }
     }
 
     LineEdit::~LineEdit() { delete ui; }
 
-    void LineEdit::setText(const QString &str) { ui->lineEdit->setText(str); }
+    void LineEdit::setValue(const QVariant &val) { ui->lineEdit->setText(val.toString()); }
 
-    QString LineEdit::text() const { return ui->lineEdit->text(); }
+    QVariant LineEdit::value() const { return ui->lineEdit->text(); }
 
     void LineEdit::setCaption(const QString &str) { ui->label->setText(str); }
 

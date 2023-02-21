@@ -6,6 +6,7 @@
 #ifndef SEKURA_SPINBOX_H
 #define SEKURA_SPINBOX_H
 
+#include "baseitem.h"
 #include <QWidget>
 
 namespace Sekura {
@@ -14,17 +15,17 @@ namespace Sekura {
         class SpinBox;
     }
 
-    class SpinBox : public QWidget {
+    class SpinBox : public BaseItem {
         Q_OBJECT
 
       public:
-        explicit SpinBox(QWidget *parent = nullptr);
+        explicit SpinBox(int type = 0, QWidget *parent = nullptr);
         ~SpinBox();
 
         void setMinMax(int min, int max);
-        void setValue(int val);
-        void setCaption(const QString &str);
-        int value() const;
+        void setValue(const QVariant &val) override;
+        void setCaption(const QString &str) override;
+        QVariant value() const override;
 
       private:
         Ui::SpinBox *ui;

@@ -19,7 +19,7 @@ namespace Sekura {
         Q_OBJECT
       public:
         explicit RestClient(QObject *parent = 0);
-        RestClient(RestSettings *settings, QObject *parent = 0);
+        RestClient(const RestSettings *settings, QObject *parent = 0);
 
       public slots:
         void request(const QString &requestString, const QString &type = "GET",
@@ -30,7 +30,7 @@ namespace Sekura {
         void error(const QJsonObject &);
 
       private:
-        RestSettings *m_settings;
+        const RestSettings *m_settings;
         QNetworkAccessManager *m_manager;
     };
 
