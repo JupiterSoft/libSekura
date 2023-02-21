@@ -15,12 +15,16 @@ namespace Sekura {
     class AuthDialog;
     class AbstractTableModel;
     class TableModel;
+    class LineEdit;
+    class DateTimeEdit;
+    class ComboBox;
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
 
     class Interface {
       public:
         static QString genUFID();
+        static QString genKey();
     };
 
 }; // namespace Sekura

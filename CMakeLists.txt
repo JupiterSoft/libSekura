@@ -40,6 +40,23 @@ add_library(
   tablemodel.h
   tablemodel.cpp
   TableModel
+  Sekura
+  lineedit.h
+  lineedit.cpp
+  lineedit.ui
+  LineEdit
+  datetimeedit.h
+  datetimeedit.cpp
+  datetimeedit.ui
+  DateTimeEdit
+  combobox.h
+  combobox.cpp
+  combobox.ui
+  ComboBox
+  spinbox.h
+  spinbox.cpp
+  spinbox.ui
+  SpinBox
 )
 
 target_link_libraries(
