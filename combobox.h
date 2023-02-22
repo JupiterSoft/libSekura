@@ -6,6 +6,7 @@
 #ifndef SEKURA_COMBOBOX_H
 #define SEKURA_COMBOBOX_H
 
+#include "baseitem.h"
 #include <QWidget>
 
 namespace Sekura {
@@ -14,23 +15,21 @@ namespace Sekura {
         class ComboBox;
     }
 
-    class ComboBox : public QWidget {
+    class ComboBox : public BaseItem {
         Q_OBJECT
 
       public:
-        explicit ComboBox(QWidget *parent = nullptr);
+        explicit ComboBox(int type, QWidget *parent = nullptr);
         ~ComboBox();
 
+        void setValue(const QVariant &dt) override;
+        QVariant value() const override;
+        void setCaption(const QString &str) override;
+
         void setModel(const QVariantList &list);
-        void setCurrentId(const QString &id);
-        void setCaption(const QString &str);
-        QString currentId() const;
 
       protected slots:
         void on_comboBox_activated(int a);
-
-      signals:
-        void valueChanged(const QString &id);
 
       private:
         Ui::ComboBox *ui;

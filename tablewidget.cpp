@@ -85,7 +85,7 @@ void TableWidget::on_pbEdit_clicked() {
         QVariantMap data = m_data;
         data["filter"].toMap()["id"] = code;
         ItemWidget *item = new ItemWidget(data, m_settings, this);
-        emit appendChild(item);
+        emit appendWidget(item);
         break;
     }
     /// TODO добавить редактирование

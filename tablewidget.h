@@ -25,7 +25,7 @@ namespace Sekura {
         ~TableWidget();
 
       signals:
-        void appendChild(QWidget *);
+        void appendWidget(QWidget *);
 
       public slots:
         void on_pbAdd_clicked();

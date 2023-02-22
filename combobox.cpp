@@ -8,9 +8,19 @@
 
 using namespace Sekura;
 
-ComboBox::ComboBox(QWidget *parent) : QWidget(parent), ui(new Ui::ComboBox) { ui->setupUi(this); }
+ComboBox::ComboBox(int type, QWidget *parent) : BaseItem(type, parent), ui(new Ui::ComboBox) {
+    ui->setupUi(this);
+}
 
 ComboBox::~ComboBox() { delete ui; }
+
+void ComboBox::setValue(const QVariant &dt) {
+    ui->comboBox->setCurrentIndex(m_id2item[dt.toString()]);
+}
+
+QVariant ComboBox::value() const { return m_item2id[ui->comboBox->currentIndex()]; }
+
+void ComboBox::setCaption(const QString &str) { ui->label->setText(str); }
 
 void ComboBox::setModel(const QVariantList &list) {
     int i = 0;
@@ -22,11 +32,5 @@ void ComboBox::setModel(const QVariantList &list) {
         i++;
     }
 }
-
-void ComboBox::setCurrentId(const QString &id) { ui->comboBox->setCurrentIndex(m_id2item[id]); }
-
-void ComboBox::setCaption(const QString &str) { ui->label->setText(str); }
-
-QString ComboBox::currentId() const { return m_item2id[ui->comboBox->currentIndex()]; }
 
 void ComboBox::on_comboBox_activated(int a) { emit valueChanged(m_item2id[a]); }

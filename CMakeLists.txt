@@ -68,6 +68,10 @@ add_library(
   itemwidget.cpp
   itemwidget.ui
   ItemWidget
+  checkbox.h
+  checkbox.cpp
+  checkbox.ui
+  CheckBox
 )
 
 target_link_libraries(
