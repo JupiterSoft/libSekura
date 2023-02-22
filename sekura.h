@@ -21,6 +21,7 @@ namespace Sekura {
     class ComboBox;
     class SpinBox;
     class TableWidget;
+    class ItemWidget;
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
 

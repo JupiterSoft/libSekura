@@ -24,6 +24,9 @@ namespace Sekura {
                              QWidget *parent = nullptr);
         ~TableWidget();
 
+      signals:
+        void appendChild(QWidget *);
+
       public slots:
         void on_pbAdd_clicked();
         void on_pbEdit_clicked();
@@ -33,6 +36,8 @@ namespace Sekura {
         Ui::TableWidget *ui;
         TableModel *m_model;
         QString m_dialogName;
+        const RestSettings *m_settings;
+        QVariantMap m_data;
     };
 
 } // namespace Sekura

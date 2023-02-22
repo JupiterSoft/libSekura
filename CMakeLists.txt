@@ -64,6 +64,10 @@ add_library(
   tablewidget.cpp
   tablewidget.ui
   TableWidget
+  itemwidget.h
+  itemwidget.cpp
+  itemwidget.ui
+  ItemWidget
 )
 
 target_link_libraries(
