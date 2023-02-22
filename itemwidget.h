@@ -33,6 +33,7 @@ namespace Sekura {
       private:
         Ui::ItemWidget *ui;
         QMap<QString, BaseItem *> m_items;
+        QMap<QString, bool> m_refs;
         RestClient *m_client;
         QVariantMap m_data;
     };
