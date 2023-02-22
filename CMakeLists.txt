@@ -26,17 +26,17 @@ add_library(
   libSekura STATIC
   sekura.cpp
   sekura.h
-  RestClient
+  Sekura
   restclient.h
   restclient.cpp
-  RestSettings
+  RestClient
   restsettings.h
   restsettings.cpp
+  RestSettings
   authdialog.h
   authdialog.cpp
   authdialog.ui
-  abstracttablemodel.h
-  abstracttablemodel.cpp
+  AuthDialog
   tablemodel.h
   tablemodel.cpp
   TableModel
@@ -76,8 +76,7 @@ add_library(
   bottombuttonswidget.cpp
   bottombuttonswidget.ui
   BottomButtonsWidget
-  resources.qrc
-)
+  resources.qrc)
 
 target_link_libraries(
   libSekura

@@ -9,6 +9,8 @@
 #include <QDateTime>
 #include <QUuid>
 
+using namespace Sekura;
+
 QString Sekura::Interface::genUFID() {
     return QCryptographicHash::hash(QUuid::createUuid().toString().toUtf8(),
                                     QCryptographicHash::Sha256)
@@ -26,3 +28,5 @@ QString Sekura::Interface::genKey() {
     }
     return m_key.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 }
+
+void sekura_init_resources() { Q_INIT_RESOURCE(resources); }

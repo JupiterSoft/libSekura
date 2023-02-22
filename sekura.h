@@ -13,7 +13,6 @@ namespace Sekura {
     class RestSettings;
     class RestClient;
     class AuthDialog;
-    class AbstractTableModel;
     class TableModel;
     class BaseItem;
     class LineEdit;
@@ -32,5 +31,7 @@ namespace Sekura {
     };
 
 }; // namespace Sekura
+
+void sekura_init_resources();
 
 #endif // SEKURA_H
