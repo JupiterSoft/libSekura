@@ -145,7 +145,15 @@ void TableModel::reload() {
     m_client->request("/query", "GET", req);
 }
 
-void TableModel::remove(const QModelIndex &index) {}
+void TableModel::remove(const QModelIndex &index) {
+    QVariantMap req, q;
+    q["table"] = m_model;
+    q["name"] = m_model;
+    q["id"] = code(index);
+    req["queries"] = QVariant(QVariantList() << q);
+    req["transaction"] = "delete";
+    m_client->request("/query", "DELETE", req);
+}
 
 void TableModel::setFilter(const QVariantMap &filter) {
     m_filter = filter;
@@ -189,6 +197,8 @@ void TableModel::success(const QJsonObject &obj) {
         m_buttons = data["buttons"].toList();
         emit initialized();
         emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount() - 1);
+    } else if (t == "delete") {
+        reload();
     }
 }
 

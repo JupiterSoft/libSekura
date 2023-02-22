@@ -72,6 +72,11 @@ add_library(
   checkbox.cpp
   checkbox.ui
   CheckBox
+  bottombuttonswidget.h
+  bottombuttonswidget.cpp
+  bottombuttonswidget.ui
+  BottomButtonsWidget
+  resources.qrc
 )
 
 target_link_libraries(

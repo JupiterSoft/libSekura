@@ -30,7 +30,7 @@ namespace Sekura {
       public slots:
         void on_pbAdd_clicked();
         void on_pbEdit_clicked();
-        void on_pnDel_clicked();
+        void on_pbDel_clicked();
 
       private:
         Ui::TableWidget *ui;

@@ -75,6 +75,12 @@ TableWidget::~TableWidget() { delete ui; }
 
 void TableWidget::on_pbAdd_clicked() {
     /// TODO добавить вставку
+    QVariantMap data = m_data;
+    QVariantMap filter;
+    data["filter"] = filter;
+    ItemWidget *item = new ItemWidget(data, m_settings, this);
+    connect(item, &ItemWidget::parentReload, this, [=]() { m_model->reload(); });
+    emit appendWidget(item);
 }
 
 void TableWidget::on_pbEdit_clicked() {
@@ -83,14 +89,21 @@ void TableWidget::on_pbEdit_clicked() {
         qDebug() << m_model->code(sel);
         QString code = m_model->code(sel);
         QVariantMap data = m_data;
-        data["filter"].toMap()["id"] = code;
+        QVariantMap filter;
+        filter["id"] = code;
+        data["filter"] = filter;
         ItemWidget *item = new ItemWidget(data, m_settings, this);
+        connect(item, &ItemWidget::parentReload, this, [=]() { m_model->reload(); });
         emit appendWidget(item);
         break;
     }
     /// TODO добавить редактирование
 }
 
-void TableWidget::on_pnDel_clicked() {
+void TableWidget::on_pbDel_clicked() {
     /// TODO добавить удаление
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+    foreach (QModelIndex sel, selection) {
+        m_model->remove(sel);
+    }
 }

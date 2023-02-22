@@ -27,6 +27,12 @@ namespace Sekura {
         void success(const QJsonObject &);
         void error(const QJsonObject &);
 
+        void saveForm();
+        void closeForm();
+
+      signals:
+        void parentReload();
+
       protected:
         void reload();
 
@@ -34,8 +40,13 @@ namespace Sekura {
         Ui::ItemWidget *ui;
         QMap<QString, BaseItem *> m_items;
         QMap<QString, bool> m_refs;
+        QMap<QString, bool> m_blockOnEdit;
+        QMap<QString, bool> m_blockAlways;
+        QVariantList m_queries;
         RestClient *m_client;
         QVariantMap m_data;
+        QVariantMap m_values;
+        bool m_isNew;
     };
 
 } // namespace Sekura
