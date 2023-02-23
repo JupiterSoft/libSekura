@@ -4,6 +4,11 @@
  * Company: Jupiter Soft
  */
 #include "sekura.h"
+#include "checkbox.h"
+#include "combobox.h"
+#include "datetimeedit.h"
+#include "lineedit.h"
+#include "spinbox.h"
 
 #include <QCryptographicHash>
 #include <QDateTime>
@@ -27,6 +32,40 @@ QString Sekura::Interface::genKey() {
         m_key[i] = gen[i * 2] ^ gen[i * 2 + 1];
     }
     return m_key.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+}
+
+BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
+    BaseItem *ptr = nullptr;
+    QString type = m["ui_desk"].toString();
+    if (type.left(8) == "LineEdit") {
+        int t = 0;
+        QString str = type.split(";")[0].remove("LineEdit").remove("(").remove(")");
+        bool ok;
+        t = str.toInt(&ok);
+        if (!ok)
+            t = 0;
+        ptr = new LineEdit(t, parent); ///<<вставить инициализацию
+    } else if (type.left(12) == "DateTimeEdit") {
+        ptr = new DateTimeEdit(0, parent);
+    } else if (type.left(8) == "ComboBox") {
+        ptr = new ComboBox(0, parent);
+    } else if (type.left(8) == "CheckBox") {
+        ptr = new CheckBox(0, parent);
+    } else if (type.left(7) == "SpinBox") {
+        SpinBox *sb = new SpinBox(0, parent);
+        int min, max;
+        QStringList lst = type.split(";")[0].remove("SpinBox").remove("(").remove(")").split(",");
+        bool ok;
+        min = lst[1].toInt(&ok);
+        if (!ok)
+            min = 0;
+        max = lst[2].toInt(&ok);
+        if (!ok)
+            max = 0;
+        sb->setMinMax(min, max);
+        ptr = sb;
+    }
+    return ptr;
 }
 
 void sekura_init_resources() { Q_INIT_RESOURCE(resources); }

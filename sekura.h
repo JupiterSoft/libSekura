@@ -7,6 +7,7 @@
 #define SEKURA_H
 
 #include <QMap>
+#include <QWidget>
 
 namespace Sekura {
 
@@ -21,6 +22,7 @@ namespace Sekura {
     class SpinBox;
     class TableWidget;
     class ItemWidget;
+    class ItemModel;
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
 
@@ -28,6 +30,7 @@ namespace Sekura {
       public:
         static QString genUFID();
         static QString genKey();
+        static BaseItem *createItem(const QVariantMap &element, QWidget *parent);
     };
 
 }; // namespace Sekura

@@ -6,6 +6,7 @@
 #ifndef SEKURA_ITEMWIDGET_H
 #define SEKURA_ITEMWIDGET_H
 
+#include "itemmodel.h"
 #include "sekura.h"
 #include <QWidget>
 
@@ -24,8 +25,7 @@ namespace Sekura {
         ~ItemWidget();
 
       protected slots:
-        void success(const QJsonObject &);
-        void error(const QJsonObject &);
+        void connectInterface(const QVariant &val);
 
         void saveForm();
         void closeForm();
@@ -38,15 +38,7 @@ namespace Sekura {
 
       private:
         Ui::ItemWidget *ui;
-        QMap<QString, BaseItem *> m_items;
-        QMap<QString, bool> m_refs;
-        QMap<QString, bool> m_blockOnEdit;
-        QMap<QString, bool> m_blockAlways;
-        QVariantList m_queries;
-        RestClient *m_client;
-        QVariantMap m_data;
-        QVariantMap m_values;
-        bool m_isNew;
+        ItemModel *m_model;
     };
 
 } // namespace Sekura

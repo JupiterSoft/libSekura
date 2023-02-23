@@ -78,7 +78,8 @@ void TableWidget::on_pbAdd_clicked() {
     QVariantMap data = m_data;
     QVariantMap filter;
     data["filter"] = filter;
-    ItemWidget *item = new ItemWidget(data, m_settings, this);
+    ItemWidget *item =
+        new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
     connect(item, &ItemWidget::parentReload, this, [=]() { m_model->reload(); });
     emit appendWidget(item);
 }

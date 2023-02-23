@@ -76,6 +76,9 @@ add_library(
   bottombuttonswidget.cpp
   bottombuttonswidget.ui
   BottomButtonsWidget
+  itemmodel.h
+  itemmodel.cpp
+  ItemModel
   resources.qrc)
 
 target_link_libraries(
