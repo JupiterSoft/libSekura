@@ -26,16 +26,19 @@ namespace Sekura {
 
       signals:
         void appendWidget(QWidget *);
+        void selectedValues(const QString &code, const QString &value);
 
       public slots:
         void on_pbAdd_clicked();
         void on_pbEdit_clicked();
         void on_pbDel_clicked();
 
+        void on_pbSelect_clicked();
+        void on_pbClose_clicked();
+
       private:
         Ui::TableWidget *ui;
         TableModel *m_model;
-        QString m_dialogName;
         const RestSettings *m_settings;
         QVariantMap m_data;
     };

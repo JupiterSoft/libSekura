@@ -39,6 +39,7 @@ namespace Sekura {
       private:
         Ui::ItemWidget *ui;
         ItemModel *m_model;
+        const RestSettings *m_settings;
     };
 
 } // namespace Sekura

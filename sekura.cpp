@@ -44,7 +44,11 @@ BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
         t = str.toInt(&ok);
         if (!ok)
             t = 0;
-        ptr = new LineEdit(t, parent); ///<<вставить инициализацию
+        LineEdit *le = new LineEdit(t, parent); ///<<вставить инициализацию
+        if (m.contains("fk_table")) {
+            le->setTable(m["fk_table"].toString());
+        }
+        ptr = le;
     } else if (type.left(12) == "DateTimeEdit") {
         ptr = new DateTimeEdit(0, parent);
     } else if (type.left(8) == "ComboBox") {

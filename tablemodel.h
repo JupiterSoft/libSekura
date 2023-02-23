@@ -30,6 +30,8 @@ namespace Sekura {
         int stretchField() const;
 
         QString code(const QModelIndex &index) const;
+        QString value(const QModelIndex &index) const;
+
         void reload();
         void remove(const QModelIndex &index);
         void setFilter(const QVariantMap &filter);

@@ -119,6 +119,13 @@ QString TableModel::code(const QModelIndex &index) const {
     return "";
 }
 
+QString TableModel::value(const QModelIndex &index) const {
+    int row = index.row();
+    if (row < m_codes.size())
+        return m_data[row][m_stretch].toString();
+    return "";
+}
+
 void TableModel::reload() {
     QVariantMap req, q;
 

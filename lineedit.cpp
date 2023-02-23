@@ -33,8 +33,7 @@ LineEdit::LineEdit(int type, QWidget *parent) : BaseItem(type, parent), ui(new U
         break;
     case 3:
         // ...
-        connect(ui->pushButton, &QPushButton::clicked, this,
-                [=]() { emit valueChanged(QVariant()); });
+        connect(ui->pushButton, &QPushButton::clicked, this, [=]() { emit valueChanged(m_table); });
         break;
     }
 }
@@ -59,6 +58,13 @@ void LineEdit::setCaption(const QString &str) { ui->label->setText(str); }
 void LineEdit::setViewValue(const QVariant &val) {
     if (m_type == 3)
         ui->lineEdit->setText(val.toString());
+}
+
+void LineEdit::selectedValues(const QString &code, const QString &value) {
+    if (m_type == 3) {
+        m_code = code;
+        ui->lineEdit->setText(value);
+    }
 }
 
 void LineEdit::setBlock(bool t) { ui->lineEdit->setReadOnly(t); }

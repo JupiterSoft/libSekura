@@ -7,6 +7,7 @@
 #include "itemwidget.h"
 #include "tablemodel.h"
 #include "ui_tablewidget.h"
+#include <QDialog>
 #include <QTimer>
 
 using namespace Sekura;
@@ -14,6 +15,11 @@ using namespace Sekura;
 TableWidget::TableWidget(const QVariantMap &data, const RestSettings *settings, QWidget *parent)
     : QWidget(parent), ui(new Ui::TableWidget), m_settings(settings), m_data(data) {
     ui->setupUi(this);
+    if (m_data.contains("select")) {
+        ui->gbTop->setVisible(false);
+    } else {
+        ui->gbBottom->setVisible(false);
+    }
     if (data.contains("filter")) {
         m_model =
             new TableModel(m_data["model"].toString(), settings, m_data["filter"].toMap(), this);
@@ -22,7 +28,6 @@ TableWidget::TableWidget(const QVariantMap &data, const RestSettings *settings, 
     }
     ui->tableView->setModel(m_model);
     this->setWindowTitle(m_data["title"].toString());
-    m_dialogName = m_data["dialog"].toString();
     if (m_model->isInitialized()) {
         int m = m_model->stretchField();
         if (m != -1) {
@@ -107,4 +112,25 @@ void TableWidget::on_pbDel_clicked() {
     foreach (QModelIndex sel, selection) {
         m_model->remove(sel);
     }
+}
+
+void TableWidget::on_pbSelect_clicked() {
+    QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
+    if (dialog != nullptr) {
+        QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+        foreach (QModelIndex sel, selection) {
+            qDebug() << m_model->code(sel);
+            QString code = m_model->code(sel);
+            QString value = m_model->value(sel);
+            emit selectedValues(code, value);
+            dialog->accept();
+            break;
+        }
+    }
+}
+
+void TableWidget::on_pbClose_clicked() {
+    QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
+    if (dialog != nullptr)
+        dialog->reject();
 }

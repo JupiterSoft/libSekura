@@ -26,6 +26,10 @@ namespace Sekura {
         QVariant value() const override;
         void setCaption(const QString &str) override;
         void setViewValue(const QVariant &) override;
+        void setTable(const QString &str) { m_table = str; }
+
+      public slots:
+        void selectedValues(const QString &code, const QString &value);
 
       protected:
         void setBlock(bool t);
@@ -33,6 +37,7 @@ namespace Sekura {
       private:
         Ui::LineEdit *ui;
         QString m_code;
+        QString m_table;
     };
 
 } // namespace Sekura

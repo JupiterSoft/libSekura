@@ -6,15 +6,18 @@
 #include "itemwidget.h"
 #include "baseitem.h"
 #include "bottombuttonswidget.h"
+#include "lineedit.h"
+#include "tablewidget.h"
 #include "ui_itemwidget.h"
 
+#include <QDialog>
 #include <QMdiSubWindow>
 #include <QSpacerItem>
 
 using namespace Sekura;
 
 ItemWidget::ItemWidget(const QVariantMap &map, const RestSettings *settings, QWidget *parent)
-    : QWidget(parent), ui(new Ui::ItemWidget) {
+    : QWidget(parent), ui(new Ui::ItemWidget), m_settings(settings) {
     ui->setupUi(this);
     m_model = new ItemModel(map, settings, this);
 
@@ -41,6 +44,23 @@ void ItemWidget::connectInterface(const QVariant &val) {
         if (ptr != nullptr) {
             ui->baseLayout->addWidget(ptr);
             m_model->setItem(id, ptr);
+            LineEdit *le = qobject_cast<LineEdit *>(ptr);
+            if (le != nullptr) {
+                connect(le, &LineEdit::valueChanged, this, [this, le](const QVariant &val) {
+                    qDebug() << "open windows for " << val.toString();
+                    QVariantMap map;
+                    map["model"] = val;
+                    map["title"] = tr("Select");
+                    map["select"] = true;
+                    QDialog *dialog = new QDialog(this);
+                    TableWidget *widget = new TableWidget(map, m_settings, dialog);
+                    connect(widget, &TableWidget::selectedValues, le, &LineEdit::selectedValues);
+                    dialog->exec();
+
+                    delete widget;
+                    delete dialog;
+                });
+            }
         }
     }
     ui->baseLayout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
