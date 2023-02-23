@@ -15,6 +15,7 @@ ComboBox::ComboBox(int type, QWidget *parent) : BaseItem(type, parent), ui(new U
 ComboBox::~ComboBox() { delete ui; }
 
 void ComboBox::setValue(const QVariant &dt) {
+    m_code = dt.toString();
     ui->comboBox->setCurrentIndex(m_id2item[dt.toString()]);
 }
 
@@ -24,12 +25,19 @@ void ComboBox::setCaption(const QString &str) { ui->label->setText(str); }
 
 void ComboBox::setModel(const QVariantList &list) {
     int i = 0;
+    bool code = false;
     foreach (QVariant v, list) {
         QVariantMap map = v.toMap();
         ui->comboBox->addItem(map["name"].toString());
         m_id2item[map["id"].toString()] = i;
         m_item2id[i] = map["id"].toString();
+        if (map["id"].toString() == m_code) {
+            code = true;
+        }
         i++;
+    }
+    if (code) {
+        setValue(m_code);
     }
 }
 

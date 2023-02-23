@@ -25,6 +25,7 @@ namespace Sekura {
         void setValue(const QVariant &dt) override;
         QVariant value() const override;
         void setCaption(const QString &str) override;
+        void setViewValue(const QVariant &) override{};
 
         void setModel(const QVariantList &list);
 
@@ -35,6 +36,7 @@ namespace Sekura {
         Ui::ComboBox *ui;
         QMap<QString, int> m_id2item;
         QMap<int, QString> m_item2id;
+        QString m_code;
     };
 
 } // namespace Sekura

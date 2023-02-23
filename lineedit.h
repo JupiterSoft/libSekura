@@ -25,12 +25,14 @@ namespace Sekura {
         void setValue(const QVariant &val) override;
         QVariant value() const override;
         void setCaption(const QString &str) override;
+        void setViewValue(const QVariant &) override;
 
       protected:
         void setBlock(bool t);
 
       private:
         Ui::LineEdit *ui;
+        QString m_code;
     };
 
 } // namespace Sekura

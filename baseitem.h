@@ -18,6 +18,7 @@ namespace Sekura {
         virtual void setCaption(const QString &) = 0;
         virtual void setValue(const QVariant &) = 0;
         virtual QVariant value() const = 0;
+        virtual void setViewValue(const QVariant &) = 0;
 
       signals:
         void valueChanged(QVariant);

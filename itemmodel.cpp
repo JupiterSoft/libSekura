@@ -128,10 +128,16 @@ void ItemModel::success(const QJsonObject &obj) {
             if (it.key() == m_data["table"]) {
                 foreach (QVariant v, lst) {
                     QVariantMap m = v.toMap();
-                    for (QVariantMap::ConstIterator it = m.constBegin(); it != m.constEnd(); ++it) {
-                        if (m_items.contains(it.key())) {
-                            m_items[it.key()]->setValue(*it);
-                            m_values[it.key()] = *it;
+                    for (QVariantMap::ConstIterator jt = m.constBegin(); jt != m.constEnd(); ++jt) {
+                        if (m_items.contains(jt.key())) {
+                            m_items[jt.key()]->setValue(*jt);
+                            m_values[jt.key()] = *jt;
+                        } else if (jt.key().right(4) == "_ref") {
+                            QString k = jt.key();
+                            k = k.remove("_ref");
+                            if (m_items.contains(k)) {
+                                m_items[k]->setViewValue(*jt);
+                            }
                         }
                     }
                 }

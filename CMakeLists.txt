@@ -79,6 +79,13 @@ add_library(
   itemmodel.h
   itemmodel.cpp
   ItemModel
+  treemodel.h
+  treemodel.cpp
+  TreeModel
+  treewidget.h
+  treewidget.cpp
+  treewidget.ui
+  TreeWidget
   resources.qrc)
 
 target_link_libraries(
