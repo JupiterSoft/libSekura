@@ -6,6 +6,7 @@
 #ifndef SEKURA_TABLEWIDGET_H
 #define SEKURA_TABLEWIDGET_H
 
+#include "basewidget.h"
 #include "restsettings.h"
 
 #include <QWidget>
@@ -16,7 +17,7 @@ namespace Sekura {
         class TableWidget;
     }
 
-    class TableWidget : public QWidget {
+    class TableWidget : public BaseWidget {
         Q_OBJECT
 
       public:
@@ -25,7 +26,6 @@ namespace Sekura {
         ~TableWidget();
 
       signals:
-        void appendWidget(QWidget *);
         void selectedValues(const QString &code, const QString &value);
 
       public slots:
@@ -35,6 +35,8 @@ namespace Sekura {
 
         void on_pbSelect_clicked();
         void on_pbClose_clicked();
+
+        void on_tableView_doubleClicked(const QModelIndex &index);
 
       private:
         Ui::TableWidget *ui;

@@ -11,6 +11,7 @@ using namespace Sekura;
 DateTimeEdit::DateTimeEdit(int type, QWidget *parent)
     : BaseItem(type, parent), ui(new Ui::DateTimeEdit) {
     ui->setupUi(this);
+    ui->dateTimeEdit->setCalendarPopup(true);
 }
 
 DateTimeEdit::~DateTimeEdit() { delete ui; }

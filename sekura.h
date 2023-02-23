@@ -7,6 +7,7 @@
 #define SEKURA_H
 
 #include <QMap>
+#include <QMenuBar>
 #include <QWidget>
 
 namespace Sekura {
@@ -16,6 +17,7 @@ namespace Sekura {
     class AuthDialog;
     class TableModel;
     class BaseItem;
+    class BaseWidget;
     class LineEdit;
     class DateTimeEdit;
     class ComboBox;
@@ -23,6 +25,7 @@ namespace Sekura {
     class TableWidget;
     class ItemWidget;
     class ItemModel;
+    class Menu;
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
 
@@ -31,6 +34,7 @@ namespace Sekura {
         static QString genUFID();
         static QString genKey();
         static BaseItem *createItem(const QVariantMap &element, QWidget *parent);
+        static Menu *createMenu(QMenuBar *mb, const RestSettings *settings, QObject *parent);
     };
 
 }; // namespace Sekura

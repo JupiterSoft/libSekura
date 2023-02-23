@@ -12,7 +12,7 @@
 using namespace Sekura;
 
 TreeWidget::TreeWidget(const QVariantMap &data, const RestSettings *settings, QWidget *parent)
-    : QWidget(parent), ui(new Ui::TreeWidget), m_settings(settings), m_data(data) {
+    : BaseWidget(parent), ui(new Ui::TreeWidget), m_settings(settings), m_data(data) {
     ui->setupUi(this);
     m_model = new TreeModel(m_data["model"].toString(), settings, this);
     ui->treeView->setModel(m_model);
@@ -95,6 +95,6 @@ void TreeWidget::on_pbEdit_clicked() {
 void TreeWidget::on_pbDel_clicked() {
     QModelIndexList selection = ui->treeView->selectionModel()->selectedIndexes();
     foreach (QModelIndex sel, selection) {
-        // m_model->remove(sel);
+        m_model->remove(sel);
     }
 }

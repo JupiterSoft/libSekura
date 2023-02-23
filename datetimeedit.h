@@ -27,6 +27,8 @@ namespace Sekura {
         void setCaption(const QString &str) override;
         void setViewValue(const QVariant &) override{};
 
+      public slots:
+
       private:
         Ui::DateTimeEdit *ui;
     };

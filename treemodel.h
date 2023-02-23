@@ -33,6 +33,9 @@ namespace Sekura {
         bool buttonsContains(const QString &str) { return m_buttons.contains(str); }
 
         QString code(const QModelIndex &index);
+        void remove(const QModelIndex &index);
+
+        void makeValues(QVariantMap &map, const QStringList &header);
 
         void reload();
 

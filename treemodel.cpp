@@ -6,6 +6,8 @@
 #include "treemodel.h"
 #include "restclient.h"
 
+#include <QQueue>
+
 using namespace Sekura;
 
 class TreeModel::TreeItem {
@@ -16,7 +18,15 @@ class TreeModel::TreeItem {
     }
     ~TreeItem() { qDeleteAll(m_childItems); }
 
+    void removeChilds() {
+        foreach (TreeItem *item, m_childItems)
+            delete item;
+        m_childItems.clear();
+    }
+
     void appendChild(TreeItem *child) { m_childItems.append(child); }
+
+    void updateData(const QVariantList &data) { m_itemData = data; }
 
     TreeItem *child(int row) {
         if (row < 0 || row >= m_childItems.size())
@@ -49,6 +59,26 @@ class TreeModel::TreeItem {
                 return ret;
         }
         return nullptr;
+    }
+
+    void fillParents(QMap<QString, TreeItem *> &p) {
+        foreach (TreeItem *ptr, m_childItems) {
+            p[ptr->id()] = ptr;
+            ptr->fillParents(p);
+        }
+    }
+
+    void makeValues(QVariantMap &map, const QStringList &headers, const QList<int> &vals) {
+        for (int i = 0; i < headers.size(); i++) {
+            map[headers[i]] = m_itemData[vals[i]];
+        }
+        QVariantList childs;
+        foreach (TreeItem *ptr, m_childItems) {
+            QVariantMap m;
+            ptr->makeValues(m, headers, vals);
+            childs << m;
+        }
+        map["childs"] = childs;
     }
 
   private:
@@ -121,7 +151,7 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const {
     TreeItem *childItem = static_cast<TreeItem *>(index.internalPointer());
     TreeItem *parentItem = childItem->parentItem();
 
-    if (parentItem == m_root)
+    if ((parentItem == m_root) || (parentItem == nullptr))
         return QModelIndex();
 
     return createIndex(parentItem->row(), 0, parentItem);
@@ -168,6 +198,29 @@ QString TreeModel::code(const QModelIndex &index) {
     return item->id();
 }
 
+void TreeModel::remove(const QModelIndex &index) {
+    QVariantMap req, q;
+    q["table"] = m_model;
+    q["name"] = m_model;
+    q["id"] = code(index);
+    req["queries"] = QVariant(QVariantList() << q);
+    req["transaction"] = "delete";
+    m_client->request("/query", "DELETE", req);
+}
+
+void TreeModel::makeValues(QVariantMap &map, const QStringList &header) {
+    QList<int> indexes;
+    foreach (QString t, header) {
+        for (int i = 0; i < m_headers.size(); i++) {
+            if (m_headers[i].toString() == t) {
+                indexes << i;
+                break;
+            }
+        }
+    }
+    m_root->makeValues(map, header, indexes);
+}
+
 void TreeModel::reload() {
     QVariantMap req, q;
 
@@ -201,21 +254,45 @@ void TreeModel::success(const QJsonObject &obj) {
     if (t == "refresh") {
         QVariantList data = response["response"].toMap()[m_model].toList();
         QMap<QString, TreeItem *> parents;
+        beginResetModel();
+        m_root->removeChilds();
         parents[""] = m_root;
+        QQueue<QVariantMap> queue;
         foreach (QVariant d, data) {
             QVariantMap mp = d.toMap();
-            // m_data.append(mp);
             QString id = mp["id"].toString();
             QString parent = mp["parent_id"].toString();
-            QVariantList vals;
-            foreach (QVariant v, m_view) {
-                vals.append(mp[v.toString()]);
+            if (parents.contains(parent)) {
+                QVariantList vals;
+                foreach (QVariant v, m_view) {
+                    vals.append(mp[v.toString()]);
+                }
+                TreeItem *item = new TreeItem(vals, parents[parent]);
+                item->setId(id);
+                parents[parent]->appendChild(item);
+                parents[id] = item;
+            } else {
+                queue.enqueue(mp);
             }
-            TreeItem *item = new TreeItem(vals, parents[parent]);
-            item->setId(id);
-            parents[parent]->appendChild(item);
-            parents[id] = item;
         }
+        while (!queue.isEmpty()) {
+            QVariantMap mp = queue.dequeue();
+            QString id = mp["id"].toString();
+            QString parent = mp["parent_id"].toString();
+            if (parents.contains(parent)) {
+                QVariantList vals;
+                foreach (QVariant v, m_view) {
+                    vals.append(mp[v.toString()]);
+                }
+                TreeItem *item = new TreeItem(vals, parents[parent]);
+                item->setId(id);
+                parents[parent]->appendChild(item);
+                parents[id] = item;
+            } else {
+                queue.enqueue(mp);
+            }
+        }
+        endResetModel();
 
         QModelIndex topLeft = index(0, 0);
         QModelIndex bottomRight = index(rowCount() - 1, columnCount() - 1);
@@ -237,7 +314,7 @@ void TreeModel::success(const QJsonObject &obj) {
         emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount() - 1);
         reload();
     } else if (t == "delete") {
-        // reload();
+        reload();
     }
 }
 

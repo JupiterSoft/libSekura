@@ -6,6 +6,7 @@
 #ifndef SEKURA_TREEWIDGET_H
 #define SEKURA_TREEWIDGET_H
 
+#include "basewidget.h"
 #include "restsettings.h"
 #include "treemodel.h"
 
@@ -17,7 +18,7 @@ namespace Sekura {
         class TreeWidget;
     }
 
-    class TreeWidget : public QWidget {
+    class TreeWidget : public BaseWidget {
         Q_OBJECT
 
       public:
@@ -26,7 +27,6 @@ namespace Sekura {
         ~TreeWidget();
 
       signals:
-        void appendWidget(QWidget *);
 
       public slots:
         void on_pbAdd_clicked();

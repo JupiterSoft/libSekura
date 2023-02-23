@@ -11,6 +11,7 @@
 #include "ui_itemwidget.h"
 
 #include <QDialog>
+#include <QLayout>
 #include <QMdiSubWindow>
 #include <QSpacerItem>
 
@@ -53,8 +54,12 @@ void ItemWidget::connectInterface(const QVariant &val) {
                     map["title"] = tr("Select");
                     map["select"] = true;
                     QDialog *dialog = new QDialog(this);
+                    QVBoxLayout *layout = new QVBoxLayout(dialog);
+                    layout->setSpacing(0);
+                    layout->setContentsMargins(5, 5, 5, 5);
                     TableWidget *widget = new TableWidget(map, m_settings, dialog);
                     connect(widget, &TableWidget::selectedValues, le, &LineEdit::selectedValues);
+                    layout->addWidget(widget);
                     dialog->exec();
 
                     delete widget;

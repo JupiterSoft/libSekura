@@ -13,7 +13,7 @@
 using namespace Sekura;
 
 TableWidget::TableWidget(const QVariantMap &data, const RestSettings *settings, QWidget *parent)
-    : QWidget(parent), ui(new Ui::TableWidget), m_settings(settings), m_data(data) {
+    : BaseWidget(parent), ui(new Ui::TableWidget), m_settings(settings), m_data(data) {
     ui->setupUi(this);
     if (m_data.contains("select")) {
         ui->gbTop->setVisible(false);
@@ -134,3 +134,5 @@ void TableWidget::on_pbClose_clicked() {
     if (dialog != nullptr)
         dialog->reject();
 }
+
+void TableWidget::on_tableView_doubleClicked(const QModelIndex &index) { on_pbSelect_clicked(); }

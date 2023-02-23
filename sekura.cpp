@@ -8,6 +8,7 @@
 #include "combobox.h"
 #include "datetimeedit.h"
 #include "lineedit.h"
+#include "menu.h"
 #include "spinbox.h"
 
 #include <QCryptographicHash>
@@ -70,6 +71,13 @@ BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
         ptr = sb;
     }
     return ptr;
+}
+
+Menu *Interface::createMenu(QMenuBar *mb, const RestSettings *settings, QObject *parent) {
+    static Menu *menu = nullptr;
+    if (menu == nullptr)
+        menu = new Menu(mb, settings, parent);
+    return menu;
 }
 
 void sekura_init_resources() { Q_INIT_RESOURCE(resources); }

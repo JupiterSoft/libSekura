@@ -86,6 +86,12 @@ add_library(
   treewidget.cpp
   treewidget.ui
   TreeWidget
+  menu.h
+  menu.cpp
+  Menu
+  basewidget.h
+  basewidget.cpp
+  BaseWidget
   resources.qrc)
 
 target_link_libraries(
