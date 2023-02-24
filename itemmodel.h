@@ -23,6 +23,8 @@ namespace Sekura {
         void reload();
         void setItem(const QString &index, BaseItem *item);
 
+        void setNew();
+
       signals:
         void connectInterface(const QVariant &);
         void setEnabled(bool);

@@ -17,6 +17,7 @@ namespace Sekura {
 
       signals:
         void appendWidget(QWidget *);
+        void parentReload();
     };
 
 } // namespace Sekura

@@ -7,12 +7,17 @@
 #include "checkbox.h"
 #include "combobox.h"
 #include "datetimeedit.h"
+#include "itemwidget.h"
 #include "lineedit.h"
 #include "menu.h"
 #include "spinbox.h"
+#include "tablewidget.h"
+#include "treewidget.h"
 
 #include <QCryptographicHash>
 #include <QDateTime>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QUuid>
 
 using namespace Sekura;
@@ -78,6 +83,51 @@ Menu *Interface::createMenu(QMenuBar *mb, const RestSettings *settings, QObject 
     if (menu == nullptr)
         menu = new Menu(mb, settings, parent);
     return menu;
+}
+
+BaseWidget *privateParseWidgets(const QVariantMap &desc, const RestSettings *settings,
+                                const QVariantMap &map, QWidget *parent) {
+    BaseWidget *ret = nullptr;
+    QVariantMap temp = map;
+    QString str = desc["type"].toString();
+    if ((str == "Table") || (str == "Tree") || (str == "Item")) {
+        temp["model"] = desc["model"];
+        QVariantMap filter;
+        if (temp.contains("filter"))
+            filter = temp["filter"].toMap();
+        if (desc.contains("filter")) {
+            foreach (QVariant f, desc["filter"].toList()) {
+                QString str = f.toString();
+                QStringList sl = str.split("=");
+                QString key = sl[0].trimmed();
+                if (!filter.contains(key)) {
+                    if (key != "id")
+                        filter[key] = "";
+                }
+            }
+        }
+        temp["filter"] = filter;
+        if (str == "Table") {
+            ret = new TableWidget(temp, settings, parent);
+        } else if (str == "Tree") {
+            ret = new TreeWidget(temp, settings, parent);
+        } else if (str == "Item") {
+            ret = new ItemWidget(temp, settings, parent);
+        }
+    } else if (str == "Box") {
+
+    } else if (str == "Splitter") {
+
+    } else if (str == "Scroll") {
+    }
+    return ret;
+}
+
+BaseWidget *Interface::createWidget(const QString &desc, const RestSettings *settings,
+                                    const QVariantMap &map, QWidget *parent) {
+    QVariantMap vals = QJsonDocument::fromJson(desc.toUtf8()).object().toVariantMap();
+
+    return privateParseWidgets(vals, settings, map, parent);
 }
 
 void sekura_init_resources() { Q_INIT_RESOURCE(resources); }

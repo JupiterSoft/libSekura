@@ -18,7 +18,7 @@
 using namespace Sekura;
 
 ItemWidget::ItemWidget(const QVariantMap &map, const RestSettings *settings, QWidget *parent)
-    : QWidget(parent), ui(new Ui::ItemWidget), m_settings(settings) {
+    : BaseWidget(parent), ui(new Ui::ItemWidget), m_settings(settings) {
     ui->setupUi(this);
     m_model = new ItemModel(map, settings, this);
 

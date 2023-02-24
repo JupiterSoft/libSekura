@@ -117,6 +117,11 @@ void ItemModel::setItem(const QString &index, BaseItem *ptr) {
     }
 }
 
+void ItemModel::setNew() {
+    m_isNew = true;
+    /// TODO Добавить очистку данных
+}
+
 void ItemModel::setFilter(const QVariantMap &filter) {
     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
         m_filter[it.key()] = *it;

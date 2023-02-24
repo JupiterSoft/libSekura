@@ -6,6 +6,7 @@
 #ifndef SEKURA_ITEMWIDGET_H
 #define SEKURA_ITEMWIDGET_H
 
+#include "basewidget.h"
 #include "itemmodel.h"
 #include "sekura.h"
 #include <QWidget>
@@ -16,7 +17,7 @@ namespace Sekura {
         class ItemWidget;
     }
 
-    class ItemWidget : public QWidget {
+    class ItemWidget : public BaseWidget {
         Q_OBJECT
 
       public:
@@ -31,7 +32,6 @@ namespace Sekura {
         void closeForm();
 
       signals:
-        void parentReload();
 
       protected:
         void reload();

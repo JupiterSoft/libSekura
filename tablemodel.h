@@ -36,6 +36,7 @@ namespace Sekura {
         void remove(const QModelIndex &index);
 
         bool buttonsContains(const QString &str) { return m_buttons.contains(str); }
+        const QString &formEdit() const { return m_form_edit; }
 
       signals:
         void initialized();
@@ -60,6 +61,7 @@ namespace Sekura {
         QString m_stretch;
         bool m_initialized;
         bool m_viewCode;
+        QString m_form_edit;
 
         RestClient *m_client;
     };

@@ -70,9 +70,10 @@ void TreeWidget::on_pbAdd_clicked() {
     QVariantMap data = m_data;
     QVariantMap filter;
     data["filter"] = filter;
-    ItemWidget *item =
-        new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
-    connect(item, &ItemWidget::parentReload, this, [=]() { m_model->reload(); });
+    // ItemWidget *item =
+    // new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
+    BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+    connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
     emit appendWidget(item);
 }
 
@@ -85,8 +86,9 @@ void TreeWidget::on_pbEdit_clicked() {
         QVariantMap filter;
         filter["id"] = code;
         data["filter"] = filter;
-        ItemWidget *item = new ItemWidget(data, m_settings, this);
-        connect(item, &ItemWidget::parentReload, this, [=]() { m_model->reload(); });
+        // ItemWidget *item = new ItemWidget(data, m_settings, this);
+        BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+        connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
         emit appendWidget(item);
         break;
     }

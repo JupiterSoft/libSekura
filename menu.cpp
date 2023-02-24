@@ -32,18 +32,11 @@ void Menu::triggered() {
     QAction *action = qobject_cast<QAction *>(sender());
     if (m_actions.contains(action)) {
         QString val = m_actions[action];
-        QStringList lst = val.split("::");
-        if (lst[0] == "Sekura") {
-            QVariantMap args;
-            args["title"] = action->text();
-            args["model"] = lst[2];
-            if (lst[1] == "TableWidget") {
-                TableWidget *widget = new TableWidget(args, m_settings);
-                emit childCreated(widget);
-            } else if (lst[1] == "TreeWidget") {
-                TreeWidget *widget = new TreeWidget(args, m_settings);
-                emit childCreated(widget);
-            }
+        QVariantMap args;
+        args["title"] = action->text();
+        BaseWidget *widget = Interface::createWidget(val, m_settings, args);
+        if (widget != nullptr) {
+            emit childCreated(widget);
         } else {
             emit createCustomChild(action->text(), val);
         }

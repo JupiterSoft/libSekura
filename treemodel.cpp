@@ -320,6 +320,7 @@ void TreeModel::success(const QJsonObject &obj) {
 
         m_stretch = data["stretch"].toString();
         m_buttons = data["buttons"].toList();
+        m_form_edit = data["form_edit"].toString();
         m_initialized = true;
         emit initialized();
         m_root = new TreeItem(m_headers);

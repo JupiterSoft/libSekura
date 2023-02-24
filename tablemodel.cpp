@@ -209,6 +209,7 @@ void TableModel::success(const QJsonObject &obj) {
         reload();
         m_stretch = data["stretch"].toString();
         m_buttons = data["buttons"].toList();
+        m_form_edit = data["form_edit"].toString();
         emit initialized();
         emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount() - 1);
     } else if (t == "delete") {

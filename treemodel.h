@@ -39,6 +39,8 @@ namespace Sekura {
 
         void reload();
 
+        const QString &formEdit() const { return m_form_edit; }
+
       signals:
         void initialized();
 
@@ -62,6 +64,7 @@ namespace Sekura {
         QVariantList m_fields;
         QVariantList m_buttons;
         QString m_stretch;
+        QString m_form_edit;
     };
 
 } // namespace Sekura
