@@ -247,6 +247,13 @@ void TreeModel::reload() {
     m_client->request("/query", "GET", req);
 }
 
+void TreeModel::changeIndex(const QString &table, const QString &id) {
+    if (m_fk.contains(table)) {
+        m_filter[m_fk[table]] = id;
+        reload();
+    }
+}
+
 void TreeModel::setFilter(const QVariantMap &filter) {
     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
         m_filter[it.key()] = *it;
@@ -321,6 +328,11 @@ void TreeModel::success(const QJsonObject &obj) {
         m_stretch = data["stretch"].toString();
         m_buttons = data["buttons"].toList();
         m_form_edit = data["form_edit"].toString();
+
+        QVariantMap fk = data["foreign_keys"].toMap();
+        for (QVariantMap::Iterator it = fk.begin(); it != fk.end(); ++it)
+            m_fk[it.key()] = it->toString();
+
         m_initialized = true;
         emit initialized();
         m_root = new TreeItem(m_headers);

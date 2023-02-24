@@ -17,6 +17,7 @@ ItemModel::ItemModel(const QVariantMap &map, const RestSettings *settings, QObje
     connect(m_client, &RestClient::error, this, &ItemModel::error);
     QVariantMap req;
     m_data["table"] = m_data["model"];
+    m_model = m_data["table"].toString();
     m_filter = m_data["filter"].toMap();
     req["transaction"] = "model";
     req["model"] = m_data["model"];
@@ -197,6 +198,7 @@ void ItemModel::success(const QJsonObject &obj) {
             m_items["id"]->setValue(map["id"]);
             m_data["filter"].toMap()["id"] = map["id"];
             m_isNew = false;
+            emit idChanged(m_model, map["id"].toString());
             break;
         }
         for (QMap<QString, bool>::Iterator it = m_blockOnEdit.begin(); it != m_blockOnEdit.end();

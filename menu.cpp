@@ -19,7 +19,7 @@ void Menu::startCreateMenu() {
     QVariantMap map;
     m_menu->makeValues(map, QStringList() << "Name"
                                           << "Action");
-    qDebug() << map;
+    // qDebug() << map;
     QVariantList lst0 = map["childs"].toList();
     foreach (QVariant v, lst0) {
         QVariantMap m = v.toMap();

@@ -33,6 +33,8 @@ namespace Sekura {
         void on_pbEdit_clicked();
         void on_pbDel_clicked();
 
+        void changeId(const QString &table, const QString &id) override;
+
       private:
         Ui::TreeWidget *ui;
         const RestSettings *m_settings;

@@ -162,6 +162,13 @@ void TableModel::remove(const QModelIndex &index) {
     m_client->request("/query", "DELETE", req);
 }
 
+void TableModel::changeIndex(const QString &table, const QString &id) {
+    if (m_fk.contains(table)) {
+        m_filter[m_fk[table]] = id;
+        reload();
+    }
+}
+
 void TableModel::setFilter(const QVariantMap &filter) {
     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
         m_filter[it.key()] = *it;
@@ -206,6 +213,11 @@ void TableModel::success(const QJsonObject &obj) {
         lst = data["view"].toList();
         foreach (QVariant v, lst)
             m_view_data.append(v.toString());
+
+        QVariantMap fk = data["foreign_keys"].toMap();
+        for (QVariantMap::Iterator it = fk.begin(); it != fk.end(); ++it)
+            m_fk[it.key()] = it->toString();
+
         reload();
         m_stretch = data["stretch"].toString();
         m_buttons = data["buttons"].toList();

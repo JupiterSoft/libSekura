@@ -14,10 +14,20 @@ namespace Sekura {
         Q_OBJECT
       public:
         explicit BaseWidget(QWidget *parent = nullptr);
+        void setMainForm(bool m) { m_mainForm = m; }
+        bool mainForm() const { return m_mainForm; }
 
       signals:
-        void appendWidget(QWidget *);
+        void appendWidget(Sekura::BaseWidget *);
         void parentReload();
+        void closeParent();
+        void idChanged(const QString &table, const QString &id);
+
+      public slots:
+        virtual void changeId(const QString &table, const QString &id);
+
+      protected:
+        bool m_mainForm;
     };
 
 } // namespace Sekura

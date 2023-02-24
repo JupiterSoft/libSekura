@@ -28,10 +28,18 @@ void ComboBox::setModel(const QVariantList &list) {
     bool code = false;
     foreach (QVariant v, list) {
         QVariantMap map = v.toMap();
-        ui->comboBox->addItem(map["name"].toString());
-        m_id2item[map["id"].toString()] = i;
-        m_item2id[i] = map["id"].toString();
-        if (map["id"].toString() == m_code) {
+        QString id, name;
+        for (QVariantMap::ConstIterator it = map.constBegin(); it != map.constEnd(); ++it) {
+            if (it.key() == "id") {
+                id = it->toString();
+            } else {
+                name = it->toString();
+            }
+        }
+        ui->comboBox->addItem(name);
+        m_id2item[id] = i;
+        m_item2id[i] = id;
+        if (id == m_code) {
             code = true;
         }
         i++;

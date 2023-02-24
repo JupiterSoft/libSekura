@@ -100,3 +100,8 @@ void TreeWidget::on_pbDel_clicked() {
         m_model->remove(sel);
     }
 }
+
+void TreeWidget::changeId(const QString &table, const QString &id) {
+    qDebug() << m_model->model() << table << id;
+    m_model->changeIndex(table, id);
+}

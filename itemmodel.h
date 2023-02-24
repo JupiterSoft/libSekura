@@ -29,6 +29,7 @@ namespace Sekura {
         void connectInterface(const QVariant &);
         void setEnabled(bool);
         void parentReload();
+        void idChanged(const QString &model, const QString &id);
 
       public slots:
         void setFilter(const QVariantMap &filter);
@@ -49,6 +50,7 @@ namespace Sekura {
         QVariantMap m_data;
         QVariantMap m_filter;
         QVariantMap m_values;
+        QString m_model;
         bool m_isNew;
     };
 

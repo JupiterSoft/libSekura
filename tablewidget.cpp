@@ -102,6 +102,7 @@ void TableWidget::on_pbEdit_clicked() {
         filter["id"] = code;
         data["filter"] = filter;
         BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+        item->setMainForm(true);
         // ItemWidget *item = new ItemWidget(data, m_settings, this);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
         emit appendWidget(item);
@@ -139,4 +140,16 @@ void TableWidget::on_pbClose_clicked() {
         dialog->reject();
 }
 
+void TableWidget::on_tableView_clicked(const QModelIndex &index) {
+    QString code = m_model->code(index);
+    if (!code.isEmpty()) {
+        emit idChanged(m_model->model(), code);
+    }
+}
+
 void TableWidget::on_tableView_doubleClicked(const QModelIndex &index) { on_pbSelect_clicked(); }
+
+void TableWidget::changeId(const QString &table, const QString &id) {
+    qDebug() << m_model->model() << table << id;
+    m_model->changeIndex(table, id);
+}

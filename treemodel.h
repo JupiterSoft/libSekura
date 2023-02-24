@@ -41,6 +41,9 @@ namespace Sekura {
 
         const QString &formEdit() const { return m_form_edit; }
 
+        void changeIndex(const QString &table, const QString &id);
+        const QString &model() const { return m_model; }
+
       signals:
         void initialized();
 
@@ -65,6 +68,7 @@ namespace Sekura {
         QVariantList m_buttons;
         QString m_stretch;
         QString m_form_edit;
+        QMap<QString, QString> m_fk;
     };
 
 } // namespace Sekura

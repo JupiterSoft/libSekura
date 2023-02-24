@@ -38,6 +38,10 @@ namespace Sekura {
         bool buttonsContains(const QString &str) { return m_buttons.contains(str); }
         const QString &formEdit() const { return m_form_edit; }
 
+        void changeIndex(const QString &table, const QString &id);
+
+        const QString &model() const { return m_model; }
+
       signals:
         void initialized();
 
@@ -57,6 +61,7 @@ namespace Sekura {
         QVariantList m_buttons;
         QVariantList m_fields;
         QVariantMap m_filter;
+        QMap<QString, QString> m_fk;
         QString m_model;
         QString m_stretch;
         bool m_initialized;

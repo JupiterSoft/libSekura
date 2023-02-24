@@ -36,7 +36,11 @@ namespace Sekura {
         void on_pbSelect_clicked();
         void on_pbClose_clicked();
 
+        void on_tableView_clicked(const QModelIndex &index);
+
         void on_tableView_doubleClicked(const QModelIndex &index);
+
+        void changeId(const QString &table, const QString &id) override;
 
       private:
         Ui::TableWidget *ui;

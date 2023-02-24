@@ -26,12 +26,19 @@ ItemWidget::ItemWidget(const QVariantMap &map, const RestSettings *settings, QWi
     connect(m_model, &ItemModel::setEnabled, this, &ItemWidget::setEnabled);
     connect(m_model, &ItemModel::parentReload, this, &ItemWidget::parentReload);
 
+    connect(m_model, &ItemModel::idChanged, this, &ItemWidget::idChanged);
+
     this->setWindowTitle(map["title"].toString());
 }
 
 ItemWidget::~ItemWidget() {
     delete ui;
     delete m_model;
+}
+
+void ItemWidget::changeId(const QString &table, const QString &id) {
+    Q_UNUSED(table)
+    Q_UNUSED(id)
 }
 
 void ItemWidget::connectInterface(const QVariant &val) {
@@ -78,10 +85,12 @@ void ItemWidget::connectInterface(const QVariant &val) {
 void ItemWidget::saveForm() { m_model->save(); }
 
 void ItemWidget::closeForm() {
-    close();
-    QMdiSubWindow *obj = qobject_cast<QMdiSubWindow *>(parentWidget());
-    if (obj != nullptr)
-        obj->close();
+    if (m_mainForm)
+        emit closeParent();
+    // close();
+    // QMdiSubWindow *obj = qobject_cast<QMdiSubWindow *>(parentWidget());
+    // if (obj != nullptr)
+    //     obj->close();
 }
 
 void ItemWidget::reload() { m_model->reload(); }

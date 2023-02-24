@@ -25,6 +25,9 @@ namespace Sekura {
                             QWidget *parent = nullptr);
         ~ItemWidget();
 
+      public slots:
+        void changeId(const QString &table, const QString &id) override;
+
       protected slots:
         void connectInterface(const QVariant &val);
 
