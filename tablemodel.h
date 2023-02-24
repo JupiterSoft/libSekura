@@ -34,12 +34,15 @@ namespace Sekura {
 
         void reload();
         void remove(const QModelIndex &index);
-        void setFilter(const QVariantMap &filter);
 
         bool buttonsContains(const QString &str) { return m_buttons.contains(str); }
 
       signals:
         void initialized();
+
+      public slots:
+        void setFilter(const QVariantMap &filter);
+        void removeFromFilter(const QString &key);
 
       protected slots:
         void success(const QJsonObject &);

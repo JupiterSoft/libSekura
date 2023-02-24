@@ -247,6 +247,18 @@ void TreeModel::reload() {
     m_client->request("/query", "GET", req);
 }
 
+void TreeModel::setFilter(const QVariantMap &filter) {
+    for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
+        m_filter[it.key()] = *it;
+    }
+    reload();
+}
+
+void TreeModel::removeFromFilter(const QString &key) {
+    m_filter.remove(key);
+    reload();
+}
+
 void TreeModel::success(const QJsonObject &obj) {
     qDebug() << obj;
     QVariantMap response = obj.toVariantMap();

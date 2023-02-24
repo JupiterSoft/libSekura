@@ -42,6 +42,10 @@ namespace Sekura {
       signals:
         void initialized();
 
+      public slots:
+        void setFilter(const QVariantMap &filter);
+        void removeFromFilter(const QString &key);
+
       protected slots:
         void success(const QJsonObject &obj);
         void error(const QJsonObject &obj);

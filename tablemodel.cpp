@@ -163,7 +163,14 @@ void TableModel::remove(const QModelIndex &index) {
 }
 
 void TableModel::setFilter(const QVariantMap &filter) {
-    m_filter = filter;
+    for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
+        m_filter[it.key()] = *it;
+    }
+    reload();
+}
+
+void TableModel::removeFromFilter(const QString &key) {
+    m_filter.remove(key);
     reload();
 }
 

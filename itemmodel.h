@@ -28,6 +28,10 @@ namespace Sekura {
         void setEnabled(bool);
         void parentReload();
 
+      public slots:
+        void setFilter(const QVariantMap &filter);
+        void removeFromFilter(const QString &key);
+
       protected slots:
         void success(const QJsonObject &);
         void error(const QJsonObject &);
@@ -41,6 +45,7 @@ namespace Sekura {
         QVariantList m_queries;
         RestClient *m_client;
         QVariantMap m_data;
+        QVariantMap m_filter;
         QVariantMap m_values;
         bool m_isNew;
     };

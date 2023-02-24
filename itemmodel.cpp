@@ -17,6 +17,7 @@ ItemModel::ItemModel(const QVariantMap &map, const RestSettings *settings, QObje
     connect(m_client, &RestClient::error, this, &ItemModel::error);
     QVariantMap req;
     m_data["table"] = m_data["model"];
+    m_filter = m_data["filter"].toMap();
     req["transaction"] = "model";
     req["model"] = m_data["model"];
     req["type"] = "item";
@@ -83,12 +84,12 @@ void ItemModel::reload() {
         q["table"] = m_data["table"];
         q["name"] = m_data["model"];
         q["fields"] = m_data["fields"];
-        if (m_data.contains("filter") && !m_data["filter"].toMap().isEmpty()) {
+        if (!m_filter.isEmpty()) {
             /// TODO set filter
             QString str;
-            QVariantMap filter = m_data["filter"].toMap();
+            // QVariantMap filter = m_data["filter"].toMap();
             bool first = true;
-            for (QVariantMap::Iterator it = filter.begin(); it != filter.end(); ++it) {
+            for (QVariantMap::Iterator it = m_filter.begin(); it != m_filter.end(); ++it) {
                 if (first)
                     first = false;
                 else
@@ -97,7 +98,7 @@ void ItemModel::reload() {
             }
             q["filter"] = str;
             /// TODO set variables
-            q["variables"] = filter;
+            q["variables"] = m_filter;
         }
         req["queries"] = QVariant(QVariantList() << m_queries << q);
     }
@@ -114,6 +115,18 @@ void ItemModel::setItem(const QString &index, BaseItem *ptr) {
         if (!m_isNew && m_blockOnEdit[index])
             ptr->setEnabled(false);
     }
+}
+
+void ItemModel::setFilter(const QVariantMap &filter) {
+    for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
+        m_filter[it.key()] = *it;
+    }
+    reload();
+}
+
+void ItemModel::removeFromFilter(const QString &key) {
+    m_filter.remove(key);
+    reload();
 }
 
 void ItemModel::success(const QJsonObject &obj) {
