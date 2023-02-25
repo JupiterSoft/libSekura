@@ -123,6 +123,24 @@ void ItemModel::setNew() {
     /// TODO Добавить очистку данных
 }
 
+void ItemModel::createTable() {
+    if (m_values.contains("table_name")) {
+        QVariantMap req;
+        req["transaction"] = "create table";
+        req["model"] = m_values["table_name"];
+        m_client->request("/model", "POST", req);
+    }
+}
+
+void ItemModel::dropTable() {
+    if (m_values.contains("table_name")) {
+        QVariantMap req;
+        req["transaction"] = "drop table";
+        req["model"] = m_values["table_name"];
+        m_client->request("/model", "DELETE", req);
+    }
+}
+
 void ItemModel::setFilter(const QVariantMap &filter) {
     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
         m_filter[it.key()] = *it;
@@ -210,6 +228,9 @@ void ItemModel::success(const QJsonObject &obj) {
     } else if (t == "update") {
         emit setEnabled(true);
         emit parentReload();
+    } else if (t == "create table") {
+
+    } else if (t == "drop table") {
     }
 }
 

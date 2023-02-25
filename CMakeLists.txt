@@ -92,6 +92,9 @@ add_library(
   basewidget.h
   basewidget.cpp
   BaseWidget
+  bottomtablewidget.h
+  bottomtablewidget.cpp
+  bottomtablewidget.ui
   resources.qrc)
 
 target_link_libraries(

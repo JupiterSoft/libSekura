@@ -10,7 +10,8 @@ namespace Sekura {
     BaseWidget::BaseWidget(QWidget *parent) : QWidget{parent}, m_mainForm(false) {}
 
     void BaseWidget::changeId(const QString &table, const QString &id) {
-        emit idChanged(table, id);
+        Q_UNUSED(table)
+        Q_UNUSED(id)
     }
 
 } // namespace Sekura

@@ -25,6 +25,11 @@ namespace Sekura {
 
         void setNew();
 
+        const QString &model() const { return m_model; }
+
+        void createTable();
+        void dropTable();
+
       signals:
         void connectInterface(const QVariant &);
         void setEnabled(bool);

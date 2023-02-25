@@ -6,6 +6,7 @@
 #include "itemwidget.h"
 #include "baseitem.h"
 #include "bottombuttonswidget.h"
+#include "bottomtablewidget.h"
 #include "lineedit.h"
 #include "tablewidget.h"
 #include "ui_itemwidget.h"
@@ -76,6 +77,12 @@ void ItemWidget::connectInterface(const QVariant &val) {
         }
     }
     ui->baseLayout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    if (m_model->model() == "a_tables") {
+        BottomTableWidget *bw = new BottomTableWidget(this);
+        connect(bw, &BottomTableWidget::createTable, this, [=]() { m_model->createTable(); });
+        connect(bw, &BottomTableWidget::dropTable, this, [=]() { m_model->dropTable(); });
+        ui->baseLayout->addWidget(bw);
+    }
     BottomButtonsWidget *bw = new BottomButtonsWidget(this);
     connect(bw, &BottomButtonsWidget::saveForm, this, &ItemWidget::saveForm);
     connect(bw, &BottomButtonsWidget::closeForm, this, &ItemWidget::closeForm);
