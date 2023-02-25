@@ -15,6 +15,9 @@ namespace Sekura {
         class LineEdit;
     }
 
+    /*!
+     * \brief The LineEdit class - элемент отображения строка редактирования
+     */
     class LineEdit : public BaseItem {
         Q_OBJECT
 

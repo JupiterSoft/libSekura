@@ -9,6 +9,12 @@
 
 using namespace Sekura;
 
+/*!
+ * \brief TableModel::TableModel - конструктор
+ * \param model - имя модели/таблица
+ * \param settings - настройки подключения
+ * \param parent - родительский объект
+ */
 TableModel::TableModel(const QString &model, const RestSettings *settings, QObject *parent)
     : QAbstractTableModel{parent} {
     m_model = model;
@@ -24,6 +30,13 @@ TableModel::TableModel(const QString &model, const RestSettings *settings, QObje
     m_client->request("/model", "GET", map);
 }
 
+/*!
+ * \brief TableModel::TableModel - конструктор с фильтром
+ * \param model - имя модели/таблицы
+ * \param settings - настройки подключения
+ * \param filter - фильтр
+ * \param parent - родительский объект
+ */
 TableModel::TableModel(const QString &model, const RestSettings *settings,
                        const QVariantMap &filter, QObject *parent)
     : QAbstractTableModel{parent} {
@@ -43,10 +56,26 @@ TableModel::TableModel(const QString &model, const RestSettings *settings,
 
 TableModel::~TableModel() { delete m_client; }
 
+/*!
+ * \brief TableModel::rowCount - количество строк
+ * \param parent - не используется
+ * \return возвращает количество строк в модели
+ */
 int TableModel::rowCount(const QModelIndex &parent) const { return m_data.size(); }
 
+/*!
+ * \brief TableModel::columnCount - количество колонок
+ * \param parent - не используется
+ * \return возвращает количество колонок в модели
+ */
 int TableModel::columnCount(const QModelIndex &parent) const { return m_headers.size(); }
 
+/*!
+ * \brief TableModel::data - получить данные для индекса
+ * \param index - индекс
+ * \param role - роль отображения
+ * \return возвращает данные по индексу для роли отборажения
+ */
 QVariant TableModel::data(const QModelIndex &index, int role) const {
     int row = index.row();
     int col = index.column();
@@ -87,6 +116,13 @@ QVariant TableModel::data(const QModelIndex &index, int role) const {
     return QVariant();
 }
 
+/*!
+ * \brief TableModel::headerData - функция для получения имени заголовка
+ * \param section - номер
+ * \param orientation - горизонтальное или вертикальное
+ * \param role - роль отображение
+ * \return значение заголовка для секции горизонтальной или вертикальной
+ */
 QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         if (section < m_headers.size())
@@ -102,6 +138,10 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
     return QVariant();
 }
 
+/*!
+ * \brief TableModel::stretchField - возвращает номер поля которое должно растягиваться
+ * \return номер поля
+ */
 int TableModel::stretchField() const {
     int ret = 0;
     foreach (QString str, m_view_data) {
@@ -112,6 +152,11 @@ int TableModel::stretchField() const {
     return -1;
 }
 
+/*!
+ * \brief TableModel::code - получение кода для индекса
+ * \param index - индекс
+ * \return код
+ */
 QString TableModel::code(const QModelIndex &index) const {
     int row = index.row();
     if (row < m_codes.size())
@@ -119,6 +164,11 @@ QString TableModel::code(const QModelIndex &index) const {
     return "";
 }
 
+/*!
+ * \brief TableModel::value - получение значение для индекса
+ * \param index - индекс
+ * \return код
+ */
 QString TableModel::value(const QModelIndex &index) const {
     int row = index.row();
     if (row < m_codes.size())
@@ -126,6 +176,9 @@ QString TableModel::value(const QModelIndex &index) const {
     return "";
 }
 
+/*!
+ * \brief TableModel::reload - перечитывает данные из СУБД
+ */
 void TableModel::reload() {
     QVariantMap req, q;
 
@@ -152,6 +205,10 @@ void TableModel::reload() {
     m_client->request("/query", "GET", req);
 }
 
+/*!
+ * \brief TableModel::remove - удаляет данные из таблицы СУБД
+ * \param index выделенный индекс
+ */
 void TableModel::remove(const QModelIndex &index) {
     QVariantMap req, q;
     q["table"] = m_model;
@@ -162,6 +219,12 @@ void TableModel::remove(const QModelIndex &index) {
     m_client->request("/query", "DELETE", req);
 }
 
+/*!
+ * \brief TableModel::changeIndex - сообщает что для таблицы table изменился текущий индекс
+ * в случае если данная таблица связана с table происходит перечитывание
+ * \param table - таблица
+ * \param id - индекс
+ */
 void TableModel::changeIndex(const QString &table, const QString &id) {
     if (m_fk.contains(table)) {
         m_filter[m_fk[table]] = id;
@@ -169,6 +232,10 @@ void TableModel::changeIndex(const QString &table, const QString &id) {
     }
 }
 
+/*!
+ * \brief TableModel::setFilter - установка постоянного фильтра
+ * \param filter - фильтр
+ */
 void TableModel::setFilter(const QVariantMap &filter) {
     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
         m_filter[it.key()] = *it;
@@ -176,11 +243,19 @@ void TableModel::setFilter(const QVariantMap &filter) {
     reload();
 }
 
+/*!
+ * \brief TableModel::removeFromFilter - удалить значение из фильтра
+ * \param key - ключ
+ */
 void TableModel::removeFromFilter(const QString &key) {
     m_filter.remove(key);
     reload();
 }
 
+/*!
+ * \brief TableModel::success - обработка успешного ответа от сервера
+ * \param obj - JSON объект ответ сервера
+ */
 void TableModel::success(const QJsonObject &obj) {
     qDebug() << obj;
     QVariantMap response = obj.toVariantMap();
@@ -229,4 +304,8 @@ void TableModel::success(const QJsonObject &obj) {
     }
 }
 
+/*!
+ * \brief TableModel::error - обработка ошибки
+ * \param obj
+ */
 void TableModel::error(const QJsonObject &obj) { qDebug() << obj; }

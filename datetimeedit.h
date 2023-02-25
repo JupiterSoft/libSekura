@@ -15,6 +15,9 @@ namespace Sekura {
         class DateTimeEdit;
     }
 
+    /*!
+     * \brief The DateTimeEdit class - элемент для ввода Даты и Времени
+     */
     class DateTimeEdit : public BaseItem {
         Q_OBJECT
 

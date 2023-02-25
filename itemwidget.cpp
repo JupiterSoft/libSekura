@@ -18,6 +18,12 @@
 
 using namespace Sekura;
 
+/*!
+ * \brief ItemWidget::ItemWidget - форма редактирования элемента базы данных
+ * \param map - установки
+ * \param settings - настройки подключения
+ * \param parent - родительская форма
+ */
 ItemWidget::ItemWidget(const QVariantMap &map, const RestSettings *settings, QWidget *parent)
     : BaseWidget(parent), ui(new Ui::ItemWidget), m_settings(settings) {
     ui->setupUi(this);
@@ -37,11 +43,20 @@ ItemWidget::~ItemWidget() {
     delete m_model;
 }
 
+/*!
+ * \brief ItemWidget::changeId - заглушка реакция на изменение
+ * \param table - название таблицы
+ * \param id - код
+ */
 void ItemWidget::changeId(const QString &table, const QString &id) {
     Q_UNUSED(table)
     Q_UNUSED(id)
 }
 
+/*!
+ * \brief ItemWidget::connectInterface - функция создания интерфейса
+ * \param val - параметры интерфейса
+ */
 void ItemWidget::connectInterface(const QVariant &val) {
     QVariantList fields = val.toList();
     QVariantList mf;
@@ -89,8 +104,14 @@ void ItemWidget::connectInterface(const QVariant &val) {
     ui->baseLayout->addWidget(bw);
 }
 
+/*!
+ * \brief ItemWidget::saveForm - обработчик сохранения модели элемента
+ */
 void ItemWidget::saveForm() { m_model->save(); }
 
+/*!
+ * \brief ItemWidget::closeForm - обработчик закрытия формы
+ */
 void ItemWidget::closeForm() {
     if (m_mainForm)
         emit closeParent();
@@ -100,4 +121,7 @@ void ItemWidget::closeForm() {
     //     obj->close();
 }
 
+/*!
+ * \brief ItemWidget::reload - обработчик обновления формы, запрос модели на обновление
+ */
 void ItemWidget::reload() { m_model->reload(); }

@@ -15,6 +15,9 @@ namespace Sekura {
         class ComboBox;
     }
 
+    /*!
+     * \brief The ComboBox class - элемент выпадающий список
+     */
     class ComboBox : public BaseItem {
         Q_OBJECT
 

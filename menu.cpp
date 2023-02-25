@@ -4,17 +4,24 @@
  * Company: Jupiter Soft
  */
 #include "menu.h"
-#include "tablewidget.h"
-#include "treewidget.h"
 
 using namespace Sekura;
 
+/*!
+ * \brief Menu::Menu - конструктор меню
+ * \param mb - панель приложения
+ * \param settings - установки соединения
+ * \param parent - родительский объект
+ */
 Menu::Menu(QMenuBar *mb, const RestSettings *settings, QObject *parent)
     : QObject{parent}, m_menuBar(mb), m_settings(settings) {
     m_menu = new TreeModel("a_menus", settings, this);
     connect(m_menu, &TreeModel::layoutChanged, this, &Menu::startCreateMenu);
 }
 
+/*!
+ * \brief Menu::startCreateMenu - создание меню
+ */
 void Menu::startCreateMenu() {
     QVariantMap map;
     m_menu->makeValues(map, QStringList() << "Name"
@@ -28,6 +35,9 @@ void Menu::startCreateMenu() {
     }
 }
 
+/*!
+ * \brief Menu::triggered - обработчик события активации элемента меню
+ */
 void Menu::triggered() {
     QAction *action = qobject_cast<QAction *>(sender());
     if (m_actions.contains(action)) {
@@ -43,6 +53,11 @@ void Menu::triggered() {
     }
 }
 
+/*!
+ * \brief Menu::appendChilds - рекурсиваня функция добавления меню
+ * \param menu - верхнее меню
+ * \param childs - список подчиненных
+ */
 void Menu::appendChilds(QMenu *menu, const QVariantList &childs) {
     foreach (QVariant v, childs) {
         QVariantMap map = v.toMap();

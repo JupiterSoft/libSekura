@@ -12,6 +12,9 @@
 
 namespace Sekura {
 
+    /*!
+     * \brief The TreeModel class модель управления данными в виде дерева
+     */
     class TreeModel : public QAbstractItemModel {
         Q_OBJECT
       public:

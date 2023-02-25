@@ -12,6 +12,9 @@
 
 namespace Sekura {
 
+    /*!
+     * \brief The ItemModel class - модель для работы с элементом данных
+     */
     class ItemModel : public QObject {
         Q_OBJECT
       public:

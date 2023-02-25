@@ -13,6 +13,9 @@
 
 namespace Sekura {
 
+    /*!
+     * \brief The RestSettings class - настройки подключения к серверу
+     */
     class RestSettings : public QObject {
         Q_OBJECT
         Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)

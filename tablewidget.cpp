@@ -4,7 +4,6 @@
  * Company: Jupiter Soft
  */
 #include "tablewidget.h"
-#include "itemwidget.h"
 #include "tablemodel.h"
 #include "ui_tablewidget.h"
 #include <QDialog>
@@ -12,6 +11,12 @@
 
 using namespace Sekura;
 
+/*!
+ * \brief TableWidget::TableWidget - конструктор
+ * \param data - данные
+ * \param settings - настройки подключения
+ * \param parent - родительский объект
+ */
 TableWidget::TableWidget(const QVariantMap &data, const RestSettings *settings, QWidget *parent)
     : BaseWidget(parent), ui(new Ui::TableWidget), m_settings(settings), m_data(data) {
     ui->setupUi(this);
@@ -78,6 +83,9 @@ TableWidget::TableWidget(const QVariantMap &data, const RestSettings *settings, 
 
 TableWidget::~TableWidget() { delete ui; }
 
+/*!
+ * \brief TableWidget::on_pbAdd_clicked - нажатие на кнопку добавить
+ */
 void TableWidget::on_pbAdd_clicked() {
     /// TODO добавить вставку
     QVariantMap data = m_data;
@@ -92,6 +100,9 @@ void TableWidget::on_pbAdd_clicked() {
     emit appendWidget(item);
 }
 
+/*!
+ * \brief TableWidget::on_pbEdit_clicked - нажатие на кнопку редактировать
+ */
 void TableWidget::on_pbEdit_clicked() {
     QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
     foreach (QModelIndex sel, selection) {
@@ -111,6 +122,9 @@ void TableWidget::on_pbEdit_clicked() {
     /// TODO добавить редактирование
 }
 
+/*!
+ * \brief TableWidget::on_pbDel_clicked - удалить запись
+ */
 void TableWidget::on_pbDel_clicked() {
     /// TODO добавить удаление
     QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
@@ -119,6 +133,9 @@ void TableWidget::on_pbDel_clicked() {
     }
 }
 
+/*!
+ * \brief TableWidget::on_pbSelect_clicked - выбор элемента
+ */
 void TableWidget::on_pbSelect_clicked() {
     QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
     if (dialog != nullptr) {
@@ -134,12 +151,20 @@ void TableWidget::on_pbSelect_clicked() {
     }
 }
 
+/*!
+ * \brief TableWidget::on_pbClose_clicked - закрыть форму
+ */
 void TableWidget::on_pbClose_clicked() {
     QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
     if (dialog != nullptr)
         dialog->reject();
 }
 
+/*!
+ * \brief TableWidget::on_tableView_clicked - нажатие мышкой, сообщить заинтересованным об измении
+ * индекса
+ * \param index - индекс
+ */
 void TableWidget::on_tableView_clicked(const QModelIndex &index) {
     QString code = m_model->code(index);
     if (!code.isEmpty()) {
@@ -147,8 +172,17 @@ void TableWidget::on_tableView_clicked(const QModelIndex &index) {
     }
 }
 
+/*!
+ * \brief TableWidget::on_tableView_doubleClicked - двойное нажатие в режиме выбора элемента
+ * \param index выбранный индекс
+ */
 void TableWidget::on_tableView_doubleClicked(const QModelIndex &index) { on_pbSelect_clicked(); }
 
+/*!
+ * \brief TableWidget::changeId - обработка сообщения об изменении текущего индекса в таблице
+ * \param table - таблица
+ * \param id - индекс
+ */
 void TableWidget::changeId(const QString &table, const QString &id) {
     qDebug() << m_model->model() << table << id;
     m_model->changeIndex(table, id);

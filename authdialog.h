@@ -15,6 +15,9 @@ namespace Sekura {
         class AuthDialog;
     }
 
+    /*!
+     * \brief The AuthDialog class - диалоговое окно авторизации по ключу
+     */
     class AuthDialog : public QDialog {
         Q_OBJECT
 

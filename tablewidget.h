@@ -17,6 +17,9 @@ namespace Sekura {
         class TableWidget;
     }
 
+    /*!
+     * \brief The TableWidget class - форма отображения табличных данных
+     */
     class TableWidget : public BaseWidget {
         Q_OBJECT
 

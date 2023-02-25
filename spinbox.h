@@ -15,6 +15,9 @@ namespace Sekura {
         class SpinBox;
     }
 
+    /*!
+     * \brief The SpinBox class - элемент управления целочисленными значениями
+     */
     class SpinBox : public BaseItem {
         Q_OBJECT
 

@@ -10,6 +10,9 @@
 
 namespace Sekura {
 
+    /*!
+     * \brief The BaseWidget class - базовый класс для всех форм
+     */
     class BaseWidget : public QWidget {
         Q_OBJECT
       public:

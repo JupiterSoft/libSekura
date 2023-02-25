@@ -18,6 +18,9 @@ namespace Sekura {
         class TreeWidget;
     }
 
+    /*!
+     * \brief The TreeWidget class - форма отображения данных в виде дерева
+     */
     class TreeWidget : public BaseWidget {
         Q_OBJECT
 

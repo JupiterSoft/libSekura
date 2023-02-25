@@ -10,46 +10,105 @@
 
 using namespace Sekura;
 
+/*!
+ * \brief The TreeModel::TreeItem class - скрытый класс иерархических элементов дерева
+ */
 class TreeModel::TreeItem {
   public:
+    /*!
+     * \brief TreeItem - конструктор
+     * \param data - список данных
+     * \param parentItem - родительский элемент
+     */
     explicit TreeItem(const QVariantList &data, TreeItem *parentItem = nullptr) {
         m_itemData = data;
         m_parentItem = parentItem;
     }
     ~TreeItem() { qDeleteAll(m_childItems); }
 
+    /*!
+     * \brief removeChilds - удалить все подчиненные элементы
+     */
     void removeChilds() {
         foreach (TreeItem *item, m_childItems)
             delete item;
         m_childItems.clear();
     }
 
+    /*!
+     * \brief appendChild - добавить подчиненный элемент
+     * \param child - элемент
+     */
     void appendChild(TreeItem *child) { m_childItems.append(child); }
 
+    /*!
+     * \brief updateData - обновить данные
+     * \param data - данные
+     */
     void updateData(const QVariantList &data) { m_itemData = data; }
 
+    /*!
+     * \brief child - получить подчиненный по номеру строки
+     * \param row - номер строки
+     * \return указатель на подчиенный объект
+     */
     TreeItem *child(int row) {
         if (row < 0 || row >= m_childItems.size())
             return nullptr;
         return m_childItems.at(row);
     }
+
+    /*!
+     * \brief childCount возвращает количество подчиненных объектов
+     * \return количество подчиненных
+     */
     int childCount() const { return m_childItems.count(); }
+
+    /*!
+     * \brief columnCount получить количество колонок
+     * \return количество колонок
+     */
     int columnCount() const { return m_itemData.count(); }
     QVariant data(int column) const {
         if (column < 0 || column >= m_itemData.size())
             return QVariant();
         return m_itemData.at(column);
     }
+
+    /*!
+     * \brief row возвращает количество строк
+     * \return количество строк
+     */
     int row() const {
         if (m_parentItem)
             return m_parentItem->m_childItems.indexOf(const_cast<TreeItem *>(this));
 
         return 0;
     }
+
+    /*!
+     * \brief parentItem - родительский элемент
+     * \return указатель на родительский элемент
+     */
     TreeItem *parentItem() { return m_parentItem; }
+
+    /*!
+     * \brief setId - установка идентификатора
+     * \param str - идентификатор
+     */
     void setId(const QString &str) { m_id = str; }
+
+    /*!
+     * \brief id - получить идентификатор
+     * \return значение идентификатора
+     */
     const QString &id() const { return m_id; }
 
+    /*!
+     * \brief findId - найти подчиненный элемент по идентификатору
+     * \param str - идентификатор
+     * \return указатель на подиченный элемент или nullptr
+     */
     TreeItem *findId(const QString &str) {
         if (str == m_id)
             return this;
@@ -61,6 +120,10 @@ class TreeModel::TreeItem {
         return nullptr;
     }
 
+    /*!
+     * \brief fillParents - заполнение по идентификаторам установка указателей
+     * \param p
+     */
     void fillParents(QMap<QString, TreeItem *> &p) {
         foreach (TreeItem *ptr, m_childItems) {
             p[ptr->id()] = ptr;
@@ -68,6 +131,12 @@ class TreeModel::TreeItem {
         }
     }
 
+    /*!
+     * \brief makeValues - по установка заполнить рекусивно элементы
+     * \param map - установки
+     * \param headers - заголовки
+     * \param vals - список значений заголовков
+     */
     void makeValues(QVariantMap &map, const QStringList &headers, const QList<int> &vals) {
         for (int i = 0; i < headers.size(); i++) {
             map[headers[i]] = m_itemData[vals[i]];
@@ -88,6 +157,12 @@ class TreeModel::TreeItem {
     QString m_id;
 };
 
+/*!
+ * \brief TreeModel::TreeModel - конструктор
+ * \param model - модель/таблица
+ * \param settings - настройки подключение
+ * \param parent - родительский объект
+ */
 TreeModel::TreeModel(const QString &model, const RestSettings *settings, QObject *parent)
     : QAbstractItemModel{parent} {
     m_root = nullptr;
@@ -108,6 +183,12 @@ TreeModel::~TreeModel() {
         delete m_root;
 }
 
+/*!
+ * \brief TreeModel::data получить данные
+ * \param index - индекс
+ * \param role - роль отображения
+ * \return значение по индексу и роли
+ */
 QVariant TreeModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
@@ -120,6 +201,13 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const {
     return item->data(index.column());
 }
 
+/*!
+ * \brief TreeModel::headerData - получить значения заголовка
+ * \param section - секция
+ * \param orientation - направление
+ * \param role - роль отображение
+ * \return значение заголовка
+ */
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (m_root != nullptr && orientation == Qt::Horizontal && role == Qt::DisplayRole)
         return m_root->data(section);
@@ -127,6 +215,13 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int rol
     return QVariant();
 }
 
+/*!
+ * \brief TreeModel::index - построить индекс по строке и колонке
+ * \param row - строка
+ * \param column - колонка
+ * \param parent - родительский индекс
+ * \return индекс
+ */
 QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent) const {
     if (!hasIndex(row, column, parent))
         return QModelIndex();
@@ -144,6 +239,11 @@ QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent) con
     return QModelIndex();
 }
 
+/*!
+ * \brief TreeModel::parent - получить родителя индекса
+ * \param index родитель
+ * \return индекс родителя
+ */
 QModelIndex TreeModel::parent(const QModelIndex &index) const {
     if (!index.isValid())
         return QModelIndex();
@@ -157,6 +257,11 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const {
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
+/*!
+ * \brief TreeModel::rowCount - количство строк в данном элементе
+ * \param parent - элемент
+ * \return количество строк у элемента
+ */
 int TreeModel::rowCount(const QModelIndex &parent) const {
     TreeItem *parentItem;
     if (parent.column() > 0)
@@ -171,6 +276,11 @@ int TreeModel::rowCount(const QModelIndex &parent) const {
     return parentItem->childCount();
 }
 
+/*!
+ * \brief TreeModel::columnCount - количество колонок
+ * \param parent - не используется
+ * \return возвращает количество колонок
+ */
 int TreeModel::columnCount(const QModelIndex &parent) const {
     if (parent.isValid())
         return static_cast<TreeItem *>(parent.internalPointer())->columnCount();
@@ -179,6 +289,10 @@ int TreeModel::columnCount(const QModelIndex &parent) const {
     return m_root->columnCount();
 }
 
+/*!
+ * \brief TreeModel::stretchField - поле по которому растягивается дерево отображения
+ * \return номер колонки
+ */
 int TreeModel::stretchField() const {
     int ret = 0;
     foreach (QVariant str, m_view) {
@@ -189,6 +303,11 @@ int TreeModel::stretchField() const {
     return -1;
 }
 
+/*!
+ * \brief TreeModel::code - получить идентификатор для элемента
+ * \param index - индекс
+ * \return код элемента по индексу
+ */
 QString TreeModel::code(const QModelIndex &index) {
     if (!index.isValid())
         return "";
@@ -198,6 +317,10 @@ QString TreeModel::code(const QModelIndex &index) {
     return item->id();
 }
 
+/*!
+ * \brief TreeModel::remove - удалить элемент из базы данных по индексу
+ * \param index - индекс
+ */
 void TreeModel::remove(const QModelIndex &index) {
     QVariantMap req, q;
     q["table"] = m_model;
@@ -208,6 +331,11 @@ void TreeModel::remove(const QModelIndex &index) {
     m_client->request("/query", "DELETE", req);
 }
 
+/*!
+ * \brief TreeModel::makeValues - заполнить значения
+ * \param map - карта значений
+ * \param header - заголовки
+ */
 void TreeModel::makeValues(QVariantMap &map, const QStringList &header) {
     QList<int> indexes;
     foreach (QString t, header) {
@@ -221,6 +349,9 @@ void TreeModel::makeValues(QVariantMap &map, const QStringList &header) {
     m_root->makeValues(map, header, indexes);
 }
 
+/*!
+ * \brief TreeModel::reload - перечитать данные из СУБД
+ */
 void TreeModel::reload() {
     QVariantMap req, q;
 
@@ -247,6 +378,11 @@ void TreeModel::reload() {
     m_client->request("/query", "GET", req);
 }
 
+/*!
+ * \brief TreeModel::changeIndex - обработка изменения индекса для таблицы
+ * \param table - таблица
+ * \param id - значение индекса
+ */
 void TreeModel::changeIndex(const QString &table, const QString &id) {
     if (m_fk.contains(table)) {
         m_filter[m_fk[table]] = id;
@@ -254,6 +390,10 @@ void TreeModel::changeIndex(const QString &table, const QString &id) {
     }
 }
 
+/*!
+ * \brief TreeModel::setFilter - установка фильтра
+ * \param filter - фильтр
+ */
 void TreeModel::setFilter(const QVariantMap &filter) {
     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
         m_filter[it.key()] = *it;
@@ -261,11 +401,19 @@ void TreeModel::setFilter(const QVariantMap &filter) {
     reload();
 }
 
+/*!
+ * \brief TreeModel::removeFromFilter - удалить значение из фильтра
+ * \param key ключ
+ */
 void TreeModel::removeFromFilter(const QString &key) {
     m_filter.remove(key);
     reload();
 }
 
+/*!
+ * \brief TreeModel::success - обработка при успешном ответе сервера
+ * \param obj - JSON объект ответ сервера
+ */
 void TreeModel::success(const QJsonObject &obj) {
     qDebug() << obj;
     QVariantMap response = obj.toVariantMap();
@@ -343,4 +491,8 @@ void TreeModel::success(const QJsonObject &obj) {
     }
 }
 
+/*!
+ * \brief TreeModel::error - обработка ошибки на сервере
+ * \param obj
+ */
 void TreeModel::error(const QJsonObject &obj) { qDebug() << obj; }

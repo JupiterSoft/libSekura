@@ -17,6 +17,9 @@ namespace Sekura {
         class ItemWidget;
     }
 
+    /*!
+     * \brief The ItemWidget class форма для отображения элемента данных
+     */
     class ItemWidget : public BaseWidget {
         Q_OBJECT
 

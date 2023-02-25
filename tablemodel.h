@@ -11,6 +11,9 @@
 
 namespace Sekura {
 
+    /*!
+     * \brief The TableModel class - модель управления табличными данными
+     */
     class TableModel : public QAbstractTableModel {
         Q_OBJECT
       public:
@@ -41,6 +44,11 @@ namespace Sekura {
         void changeIndex(const QString &table, const QString &id);
 
         const QString &model() const { return m_model; }
+
+        const QVector<QString> &viewData() const { return m_view_data; }
+        void setViewData(const QVector<QString> &v) { m_view_data = v; }
+        const QVector<QString> &headers() const { return m_headers; }
+        void setHeaders(const QVector<QString> &v) { m_headers = v; }
 
       signals:
         void initialized();

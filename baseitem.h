@@ -10,6 +10,9 @@
 
 namespace Sekura {
 
+    /*!
+     * \brief The BaseItem class - базовый абстрактный класс для всех элементов
+     */
     class BaseItem : public QWidget {
         Q_OBJECT
       public:

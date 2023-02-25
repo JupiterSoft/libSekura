@@ -14,6 +14,9 @@ namespace Sekura {
         class BottomTableWidget;
     }
 
+    /*!
+     * \brief The BottomTableWidget class - форма для отображения дополнительных кнопока снизу
+     */
     class BottomTableWidget : public QWidget {
         Q_OBJECT
 

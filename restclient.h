@@ -15,6 +15,9 @@
 
 namespace Sekura {
 
+    /*!
+     * \brief The RestClient class - основной клиент для связи с сервером
+     */
     class RestClient : public QObject {
         Q_OBJECT
       public:

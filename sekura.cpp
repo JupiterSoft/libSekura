@@ -26,12 +26,20 @@
 
 using namespace Sekura;
 
+/*!
+ * \brief Sekura::Interface::genUFID - генерирует новую метку
+ * \return метка
+ */
 QString Sekura::Interface::genUFID() {
     return QCryptographicHash::hash(QUuid::createUuid().toString().toUtf8(),
                                     QCryptographicHash::Sha256)
         .toBase64(QByteArray::Base64UrlEncoding);
 }
 
+/*!
+ * \brief Sekura::Interface::genKey - генерирует новый ключ
+ * \return ключ
+ */
 QString Sekura::Interface::genKey() {
     QCryptographicHash hash(QCryptographicHash::Sha256);
     hash.addData(QUuid::createUuid().toByteArray());
@@ -44,6 +52,12 @@ QString Sekura::Interface::genKey() {
     return m_key.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 }
 
+/*!
+ * \brief Interface::createItem - создает новый элемент управления
+ * \param m - описание элемента
+ * \param parent - родитель
+ * \return возвращает новый элемент управления
+ */
 BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
     BaseItem *ptr = nullptr;
     QString type = m["ui_desk"].toString();
@@ -82,6 +96,13 @@ BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
     return ptr;
 }
 
+/*!
+ * \brief Interface::createMenu создает новое меню на основе описания
+ * \param mb - описание меню
+ * \param settings - настройки подключения к серверу
+ * \param parent - родитеь
+ * \return - новое меню
+ */
 Menu *Interface::createMenu(QMenuBar *mb, const RestSettings *settings, QObject *parent) {
     static Menu *menu = nullptr;
     if (menu == nullptr)
@@ -89,6 +110,15 @@ Menu *Interface::createMenu(QMenuBar *mb, const RestSettings *settings, QObject 
     return menu;
 }
 
+/*!
+ * \brief privateParseWidgets - рекурсивная функция для разбора создания формы
+ * \param ref - описание всех таблиц что есть на форме, для связывания
+ * \param desc - описание формы
+ * \param settings - настройки подключения
+ * \param map - параметры
+ * \param parent - родитель
+ * \return созданный элемент управления
+ */
 BaseWidget *privateParseWidgets(QVariantMap &ref, const QVariantMap &desc,
                                 const RestSettings *settings, const QVariantMap &map,
                                 QWidget *parent) {
@@ -149,6 +179,7 @@ BaseWidget *privateParseWidgets(QVariantMap &ref, const QVariantMap &desc,
                 layout->addWidget(w);
                 QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
                 QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
                 QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
                 QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
             }
@@ -176,6 +207,7 @@ BaseWidget *privateParseWidgets(QVariantMap &ref, const QVariantMap &desc,
                 layout->addWidget(w);
                 QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
                 QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
                 QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
                 QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
             }
@@ -207,6 +239,7 @@ BaseWidget *privateParseWidgets(QVariantMap &ref, const QVariantMap &desc,
                 scroll->setWidget(w);
                 QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
                 QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
                 QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
                 QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
                 break;
@@ -217,6 +250,14 @@ BaseWidget *privateParseWidgets(QVariantMap &ref, const QVariantMap &desc,
     return ret;
 }
 
+/*!
+ * \brief Interface::createWidget - создать форму на основе описания
+ * \param desc - описание формы
+ * \param settings - настройки подключения
+ * \param map - установки
+ * \param parent - родительская форма
+ * \return новая форма
+ */
 BaseWidget *Interface::createWidget(const QString &desc, const RestSettings *settings,
                                     const QVariantMap &map, QWidget *parent) {
     QVariantMap vals = QJsonDocument::fromJson(desc.toUtf8()).object().toVariantMap();

@@ -15,6 +15,10 @@ namespace Sekura {
         class CheckBox;
     }
 
+    /*!
+     * \brief The CheckBox class - элемент \b{Флажок}
+     *
+     */
     class CheckBox : public BaseItem {
         Q_OBJECT
 

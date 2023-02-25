@@ -14,6 +14,9 @@
 
 namespace Sekura {
 
+    /*!
+     * \brief The Menu class - меню
+     */
     class Menu : public QObject {
         Q_OBJECT
       public:

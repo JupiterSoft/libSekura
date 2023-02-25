@@ -14,6 +14,12 @@
 
 using namespace Sekura;
 
+/*!
+ * \brief AuthDialog::AuthDialog - конструктор диалога
+ * \param settings - настройки подключения
+ * \param requestKeyButton - активировать кнопку запрашивать ключ
+ * \param parent - родитель
+ */
 AuthDialog::AuthDialog(RestSettings *settings, bool requestKeyButton, QWidget *parent)
     : QDialog(parent), ui(new Ui::AuthDialog), m_settings(settings) {
     ui->setupUi(this);
@@ -32,6 +38,10 @@ AuthDialog::~AuthDialog() {
     delete m_client;
 }
 
+/*!
+ * \brief AuthDialog::accept - пользователь нажал кнопку ок, отправляем запрос на сервер для
+ * авторизации
+ */
 void AuthDialog::accept() {
 
     if (ui->leKey->text().isEmpty() || ui->lePin->text().isEmpty()) {
@@ -50,6 +60,10 @@ void AuthDialog::accept() {
     // todo start wait process
 }
 
+/*!
+ * \brief AuthDialog::success - ответ сервера без ошибок
+ * \param obj
+ */
 void AuthDialog::success(const QJsonObject &obj) {
     if (obj.contains("token")) {
         QString token = obj.value("token").toString();
@@ -65,12 +79,19 @@ void AuthDialog::success(const QJsonObject &obj) {
     }
 }
 
+/*!
+ * \brief AuthDialog::error - ответ сервера в случае неудачи
+ * \param obj
+ */
 void AuthDialog::error(const QJsonObject &obj) {
     QString e = obj.value("error").toString();
     QString ref = obj.value("ref").toString();
     ui->lError->setText(ref);
 }
 
+/*!
+ * \brief AuthDialog::on_pbRequestKey_clicked - запросить ключ
+ */
 void AuthDialog::on_pbRequestKey_clicked() {
     QVariantMap map;
     map["newkey"] = 1;

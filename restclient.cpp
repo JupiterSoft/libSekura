@@ -14,16 +14,31 @@
 
 using namespace Sekura;
 
+/*!
+ * \brief RestClient::RestClient - базовый конструктор
+ * \param parent - родительский объект
+ */
 RestClient::RestClient(QObject *parent) : QObject(parent) {
     m_settings = nullptr;
     m_manager = new QNetworkAccessManager(this);
 }
 
+/*!
+ * \brief RestClient::RestClient - основной конструктор
+ * \param settings - настройки подключения
+ * \param parent - родительский объект
+ */
 RestClient::RestClient(const RestSettings *settings, QObject *parent)
     : QObject(parent), m_settings(settings) {
     m_manager = new QNetworkAccessManager(this);
 }
 
+/*!
+ * \brief RestClient::request - функция запроса
+ * \param requestString - строка запроса, содержит путь
+ * \param type - тип запроса GET|POST|PATCH|DELETE
+ * \param body - тело запроса, тело передается всегда, даже в GET
+ */
 void RestClient::request(const QString &requestString, const QString &type,
                          const QVariantMap &body) {
     QNetworkRequest request;

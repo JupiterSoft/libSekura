@@ -29,6 +29,9 @@ namespace Sekura {
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
 
+    /*!
+     * \brief The Interface class - интерфейс со статическими функциями
+     */
     class Interface {
       public:
         static QString genUFID();

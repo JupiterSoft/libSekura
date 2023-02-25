@@ -9,6 +9,12 @@
 
 using namespace Sekura;
 
+/*!
+ * \brief ItemModel::ItemModel - конструктор
+ * \param map - установки модели
+ * \param settings - настройки подключения
+ * \param parent - родитель
+ */
 ItemModel::ItemModel(const QVariantMap &map, const RestSettings *settings, QObject *parent)
     : QObject{parent} {
     m_data = map;
@@ -32,6 +38,10 @@ ItemModel::ItemModel(const QVariantMap &map, const RestSettings *settings, QObje
 
 ItemModel::~ItemModel() { delete m_client; }
 
+/*!
+ * \brief ItemModel::save - сохранить модель, если это новый то POST запрос, если существующий то
+ * PATCH запрос
+ */
 void ItemModel::save() {
     if (m_isNew) {
         // создать post обращение
@@ -77,6 +87,9 @@ void ItemModel::save() {
     }
 }
 
+/*!
+ * \brief ItemModel::reload - обновить информацию об элементе
+ */
 void ItemModel::reload() {
     QVariantMap req, q;
     if (m_isNew) {
@@ -107,6 +120,11 @@ void ItemModel::reload() {
     m_client->request("/query", "GET", req);
 }
 
+/*!
+ * \brief ItemModel::setItem - устанавливает элемент управления для поля
+ * \param index - имя поля
+ * \param ptr - элемент управления
+ */
 void ItemModel::setItem(const QString &index, BaseItem *ptr) {
     if (ptr != nullptr) {
         m_items[index] = ptr;
@@ -118,11 +136,17 @@ void ItemModel::setItem(const QString &index, BaseItem *ptr) {
     }
 }
 
+/*!
+ * \brief ItemModel::setNew - взводит флаг \b{Это Новый}
+ */
 void ItemModel::setNew() {
     m_isNew = true;
     /// TODO Добавить очистку данных
 }
 
+/*!
+ * \brief ItemModel::createTable - создает таблицу в базе данных
+ */
 void ItemModel::createTable() {
     if (m_values.contains("table_name")) {
         QVariantMap req;
@@ -132,6 +156,9 @@ void ItemModel::createTable() {
     }
 }
 
+/*!
+ * \brief ItemModel::dropTable - удаляет таблицу из базы данных
+ */
 void ItemModel::dropTable() {
     if (m_values.contains("table_name")) {
         QVariantMap req;
@@ -141,6 +168,10 @@ void ItemModel::dropTable() {
     }
 }
 
+/*!
+ * \brief ItemModel::setFilter - устанавливает новый фильтр и перечитывает элемент
+ * \param filter
+ */
 void ItemModel::setFilter(const QVariantMap &filter) {
     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
         m_filter[it.key()] = *it;
@@ -148,11 +179,19 @@ void ItemModel::setFilter(const QVariantMap &filter) {
     reload();
 }
 
+/*!
+ * \brief ItemModel::removeFromFilter - удалить из фильтра и перечитать элемент
+ * \param key
+ */
 void ItemModel::removeFromFilter(const QString &key) {
     m_filter.remove(key);
     reload();
 }
 
+/*!
+ * \brief ItemModel::success - ответ от сервер без ошибок
+ * \param obj - JSON объект
+ */
 void ItemModel::success(const QJsonObject &obj) {
     qDebug() << obj;
     QVariantMap response = obj.toVariantMap();
@@ -234,4 +273,8 @@ void ItemModel::success(const QJsonObject &obj) {
     }
 }
 
+/*!
+ * \brief ItemModel::error - ошибка от сервера
+ * \param obj
+ */
 void ItemModel::error(const QJsonObject &obj) { qDebug() << obj; }
