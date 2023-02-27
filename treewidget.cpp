@@ -19,7 +19,7 @@ using namespace Sekura;
 TreeWidget::TreeWidget(const QVariantMap &data, const RestSettings *settings, QWidget *parent)
     : BaseWidget(parent), ui(new Ui::TreeWidget), m_settings(settings), m_data(data) {
     ui->setupUi(this);
-    m_model = new TreeModel(m_data["model"].toString(), settings, this);
+    m_model = new TreeModel(m_data, settings, this);
     ui->treeView->setModel(m_model);
     this->setWindowTitle(m_data["title"].toString());
     if (m_model->isInitialized()) {

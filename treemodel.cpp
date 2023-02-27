@@ -163,10 +163,14 @@ class TreeModel::TreeItem {
  * \param settings - настройки подключение
  * \param parent - родительский объект
  */
-TreeModel::TreeModel(const QString &model, const RestSettings *settings, QObject *parent)
+TreeModel::TreeModel(const QVariantMap &params, const RestSettings *settings, QObject *parent)
     : QAbstractItemModel{parent} {
     m_root = nullptr;
-    m_model = model;
+    m_model = params["model"].toString();
+    m_only_my = false;
+    if (params.contains("onlyMy"))
+        m_only_my = true;
+    /// TODO вместо строки использовать VariantMap передать параметр только мои
     m_client = new RestClient(settings, this);
     connect(m_client, &RestClient::success, this, &TreeModel::success);
     connect(m_client, &RestClient::error, this, &TreeModel::error);
@@ -358,6 +362,7 @@ void TreeModel::reload() {
     q["table"] = m_model;
     q["name"] = m_model;
     q["fields"] = m_fields;
+    /// TODO передать параметр только мои
     if (!m_filter.isEmpty()) {
         /// TODO set filter
         QString str;
@@ -375,6 +380,8 @@ void TreeModel::reload() {
     }
     req["queries"] = QVariant(QVariantList() << q);
     req["transaction"] = "refresh";
+    if (m_only_my)
+        req["onlyMy"] = true;
     m_client->request("/query", "GET", req);
 }
 

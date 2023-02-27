@@ -15,7 +15,10 @@ using namespace Sekura;
  */
 Menu::Menu(QMenuBar *mb, const RestSettings *settings, QObject *parent)
     : QObject{parent}, m_menuBar(mb), m_settings(settings) {
-    m_menu = new TreeModel("a_menus", settings, this);
+    QVariantMap map;
+    map["model"] = "a_menus";
+    map["onlyMy"] = true;
+    m_menu = new TreeModel(map, settings, this);
     connect(m_menu, &TreeModel::layoutChanged, this, &Menu::startCreateMenu);
 }
 

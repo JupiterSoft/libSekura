@@ -18,7 +18,7 @@ namespace Sekura {
     class TreeModel : public QAbstractItemModel {
         Q_OBJECT
       public:
-        explicit TreeModel(const QString &model, const RestSettings *settings,
+        explicit TreeModel(const QVariantMap &map, const RestSettings *settings,
                            QObject *parent = nullptr);
         ~TreeModel();
 
@@ -72,6 +72,7 @@ namespace Sekura {
         QString m_stretch;
         QString m_form_edit;
         QMap<QString, QString> m_fk;
+        bool m_only_my;
     };
 
 } // namespace Sekura
