@@ -463,8 +463,10 @@ void TreeModel::success(const QJsonObject &obj) {
 
         QModelIndex topLeft = index(0, 0);
         QModelIndex bottomRight = index(rowCount() - 1, columnCount() - 1);
-        emit dataChanged(topLeft, bottomRight);
-        emit layoutChanged();
+        if (bottomRight.isValid()) {
+            emit dataChanged(topLeft, bottomRight);
+            emit layoutChanged();
+        }
     } else if (t == "model") {
         // reload();
         QVariantMap data = response["response"].toMap();
