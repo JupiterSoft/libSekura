@@ -20,8 +20,10 @@ using namespace Sekura;
 TableWidget::TableWidget(const QVariantMap &data, const RestSettings *settings, QWidget *parent)
     : BaseWidget(parent), ui(new Ui::TableWidget), m_settings(settings), m_data(data) {
     ui->setupUi(this);
+    m_mode = 0; ///< Просмотр в таблице
     if (m_data.contains("select")) {
         ui->gbTop->setVisible(false);
+        m_mode = 1; ///< выбор в таблице
     } else {
         ui->gbBottom->setVisible(false);
     }
@@ -176,7 +178,23 @@ void TableWidget::on_tableView_clicked(const QModelIndex &index) {
  * \brief TableWidget::on_tableView_doubleClicked - двойное нажатие в режиме выбора элемента
  * \param index выбранный индекс
  */
-void TableWidget::on_tableView_doubleClicked(const QModelIndex &index) { on_pbSelect_clicked(); }
+void TableWidget::on_tableView_doubleClicked(const QModelIndex &index) {
+    if (m_mode == 1)
+        on_pbSelect_clicked();
+    else if (m_mode == 0) {
+        qDebug() << m_model->code(index);
+        QString code = m_model->code(index);
+        QVariantMap data = m_data;
+        QVariantMap filter;
+        filter["id"] = code;
+        data["filter"] = filter;
+        BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+        item->setMainForm(true);
+        // ItemWidget *item = new ItemWidget(data, m_settings, this);
+        connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
+        emit appendWidget(item);
+    }
+}
 
 /*!
  * \brief TableWidget::changeId - обработка сообщения об изменении текущего индекса в таблице

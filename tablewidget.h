@@ -50,6 +50,7 @@ namespace Sekura {
         TableModel *m_model;
         const RestSettings *m_settings;
         QVariantMap m_data;
+        int m_mode;
     };
 
 } // namespace Sekura
