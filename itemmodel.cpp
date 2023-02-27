@@ -220,8 +220,10 @@ void ItemModel::success(const QJsonObject &obj) {
             } else {
                 if (m_items.contains(it.key())) {
                     ComboBox *b = dynamic_cast<ComboBox *>(m_items[it.key()]);
-                    if (b != nullptr)
+                    if (b != nullptr) {
                         b->setModel(lst);
+                        // if(m_filter.contains())
+                    }
                 }
             }
         }
@@ -229,6 +231,7 @@ void ItemModel::success(const QJsonObject &obj) {
         QVariantMap resp = response["response"].toMap();
         // Построить модель
         QVariantList fields = resp["fields"].toList();
+        QVariantMap filter = resp["child_filter"].toMap();
         QVariantList mf;
         foreach (QVariant v, fields) {
             QVariantMap m = v.toMap();
@@ -239,6 +242,10 @@ void ItemModel::success(const QJsonObject &obj) {
             m_blockAlways[id] = m["block_always"].toBool();
             if (m.contains("fk_table")) {
                 m_refs[id] = true;
+                if (filter.contains(m["fk_table"].toString())) {
+                    const QVariantMap &f1 = filter[m["fk_table"].toString()].toMap();
+                    m_filter[id] = f1["id"].toString();
+                }
             }
             m_captions[id] = m["caption"].toString();
         }

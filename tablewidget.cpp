@@ -89,10 +89,10 @@ TableWidget::~TableWidget() { delete ui; }
 void TableWidget::on_pbAdd_clicked() {
     /// TODO добавить вставку
     QVariantMap data = m_data;
-    QVariantMap filter;
-    data["filter"] = filter;
-    // ItemWidget *item =
-    //     new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
+    // QVariantMap filter;
+    // data["filter"] = filter;
+    //  ItemWidget *item =
+    //      new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
 
     BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
 
