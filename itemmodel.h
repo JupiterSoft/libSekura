@@ -18,7 +18,7 @@ namespace Sekura {
     class ItemModel : public QObject {
         Q_OBJECT
       public:
-        explicit ItemModel(const QVariantMap &map, const RestSettings *settings,
+        explicit ItemModel(ModelFilter *filter, const RestSettings *settings,
                            QObject *parent = nullptr);
         ~ItemModel();
 
@@ -26,9 +26,13 @@ namespace Sekura {
         void reload();
         void setItem(const QString &index, BaseItem *item);
 
+        ModelFilter *modelFilter() { return m_modelFilter; }
+
         void setNew();
 
         const QString &model() const { return m_model; }
+
+        bool isNew() const { return m_isNew; }
 
         void createTable();
         void dropTable();
@@ -40,8 +44,8 @@ namespace Sekura {
         void idChanged(const QString &model, const QString &id);
 
       public slots:
-        void setFilter(const QVariantMap &filter);
-        void removeFromFilter(const QString &key);
+        //        void setFilter(const QVariantMap &filter);
+        //        void removeFromFilter(const QString &key);
 
       protected slots:
         void success(const QJsonObject &);
@@ -55,10 +59,18 @@ namespace Sekura {
         QMap<QString, QString> m_captions;
         QVariantList m_queries;
         RestClient *m_client;
-        QVariantMap m_data;
-        QVariantMap m_filter;
+
+        // QVariantMap m_data;
+        // QVariantMap m_filter;
+        QVariantList m_fields;
         QVariantMap m_values;
         QString m_model;
+
+        // model filter
+        ModelFilter *m_modelFilter;
+        QVariantMap m_filterFromDesc;
+        QVariantMap m_valueFromParent;
+
         bool m_isNew;
     };
 

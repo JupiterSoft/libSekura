@@ -6,6 +6,7 @@
 #include "itemmodel.h"
 #include "baseitem.h"
 #include "combobox.h"
+#include "modelfilter.h"
 
 using namespace Sekura;
 
@@ -15,23 +16,24 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родитель
  */
-ItemModel::ItemModel(const QVariantMap &map, const RestSettings *settings, QObject *parent)
+ItemModel::ItemModel(ModelFilter *filter, const RestSettings *settings, QObject *parent)
     : QObject{parent} {
-    m_data = map;
+    m_modelFilter = filter;
+    m_model = m_modelFilter->value("temp", "model").toString();
     m_client = new RestClient(settings, this);
     connect(m_client, &RestClient::success, this, &ItemModel::success);
     connect(m_client, &RestClient::error, this, &ItemModel::error);
     QVariantMap req;
-    m_data["table"] = m_data["model"];
-    m_model = m_data["table"].toString();
-    m_filter = m_data["filter"].toMap();
+    // m_data["table"] = m_data["model"];
+    // m_model = m_data["table"].toString();
+    // m_filter = m_data["filter"].toMap();
     req["transaction"] = "model";
-    req["model"] = m_data["model"];
+    req["model"] = m_model;
     req["type"] = "item";
-    if (m_data["filter"].toMap().contains("id")) {
-        m_isNew = false;
-    } else {
+    if (m_modelFilter->value(m_model).contains("isNew")) {
         m_isNew = true;
+    } else {
+        m_isNew = false;
     }
     m_client->request("/model", "GET", req);
 }
@@ -46,8 +48,8 @@ void ItemModel::save() {
     if (m_isNew) {
         // создать post обращение
         QVariantMap req, q, f;
-        q["table"] = m_data["table"];
-        q["name"] = m_data["table"];
+        q["table"] = m_model;
+        q["name"] = m_model;
 
         for (QMap<QString, BaseItem *>::Iterator it = m_items.begin(); it != m_items.end(); ++it) {
             if (!m_blockAlways[it.key()]) {
@@ -63,8 +65,8 @@ void ItemModel::save() {
     } else {
         // проверить все что изменились и вставить в patch
         QVariantMap req, q, f;
-        q["table"] = m_data["table"];
-        q["name"] = m_data["table"];
+        q["table"] = m_model;
+        q["name"] = m_model;
 
         bool changed = false;
 
@@ -76,7 +78,8 @@ void ItemModel::save() {
                 changed = true;
             }
         }
-        f["id"] = m_data["filter"].toMap()["id"];
+        // f["id"] = m_items["id"]->value(); //< может отстутствовать!!!
+        f["id"] = m_modelFilter->value(m_model, "id");
         if (changed) {
             q["fields"] = QVariant(f);
             req["queries"] = QVariant(QVariantList() << q);
@@ -95,25 +98,14 @@ void ItemModel::reload() {
     if (m_isNew) {
         req["queries"] = QVariant(QVariantList() << m_queries);
     } else {
-        q["table"] = m_data["table"];
-        q["name"] = m_data["model"];
-        q["fields"] = m_data["fields"];
-        if (!m_filter.isEmpty()) {
-            /// TODO set filter
-            QString str;
-            // QVariantMap filter = m_data["filter"].toMap();
-            bool first = true;
-            for (QVariantMap::Iterator it = m_filter.begin(); it != m_filter.end(); ++it) {
-                if (first)
-                    first = false;
-                else
-                    str += " AND ";
-                str += "a." + it.key() + " = :" + it.key();
-            }
-            q["filter"] = str;
-            /// TODO set variables
-            q["variables"] = m_filter;
-        }
+        q["table"] = m_model;
+        q["name"] = m_model;
+        q["fields"] = m_fields;
+        /// TODO переделать фильтрацию
+        q["filter"] = "a.id = :id";
+        QVariantMap vars;
+        vars["id"] = m_modelFilter->value(m_model, "id");
+        q["variables"] = vars;
         req["queries"] = QVariant(QVariantList() << m_queries << q);
     }
     req["transaction"] = "refresh";
@@ -130,9 +122,9 @@ void ItemModel::setItem(const QString &index, BaseItem *ptr) {
         m_items[index] = ptr;
         ptr->setCaption(m_captions[index]);
         if (m_blockAlways[index])
-            ptr->setEnabled(false);
+            ptr->setEnabled(false); ///< TODO read only
         if (!m_isNew && m_blockOnEdit[index])
-            ptr->setEnabled(false);
+            ptr->setEnabled(false); ///< TODO read only
     }
 }
 
@@ -172,21 +164,21 @@ void ItemModel::dropTable() {
  * \brief ItemModel::setFilter - устанавливает новый фильтр и перечитывает элемент
  * \param filter
  */
-void ItemModel::setFilter(const QVariantMap &filter) {
-    for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
-        m_filter[it.key()] = *it;
-    }
-    reload();
-}
+// void ItemModel::setFilter(const QVariantMap &filter) {
+//     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
+//         m_filter[it.key()] = *it;
+//     }
+//     reload();
+// }
 
 /*!
  * \brief ItemModel::removeFromFilter - удалить из фильтра и перечитать элемент
  * \param key
  */
-void ItemModel::removeFromFilter(const QString &key) {
-    m_filter.remove(key);
-    reload();
-}
+// void ItemModel::removeFromFilter(const QString &key) {
+//     m_filter.remove(key);
+//     reload();
+// }
 
 /*!
  * \brief ItemModel::success - ответ от сервер без ошибок
@@ -201,7 +193,7 @@ void ItemModel::success(const QJsonObject &obj) {
         QVariantMap tbls = response["response"].toMap();
         for (QVariantMap::Iterator it = tbls.begin(); it != tbls.end(); ++it) {
             QVariantList lst = it->toList();
-            if (it.key() == m_data["table"]) {
+            if (it.key() == m_model) {
                 foreach (QVariant v, lst) {
                     QVariantMap m = v.toMap();
                     for (QVariantMap::ConstIterator jt = m.constBegin(); jt != m.constEnd(); ++jt) {
@@ -231,38 +223,40 @@ void ItemModel::success(const QJsonObject &obj) {
         QVariantMap resp = response["response"].toMap();
         // Построить модель
         QVariantList fields = resp["fields"].toList();
-        QVariantMap filter = resp["child_filter"].toMap();
-        QVariantList mf;
+        // QVariantMap filter = resp["child_filter"].toMap();
+        m_fields.clear();
         foreach (QVariant v, fields) {
             QVariantMap m = v.toMap();
             QString id = m["name"].toString();
-            mf << id;
+            m_fields << id;
             BaseItem *ptr = nullptr;
             m_blockOnEdit[id] = m["block_on_edit"].toBool();
             m_blockAlways[id] = m["block_always"].toBool();
             if (m.contains("fk_table")) {
                 m_refs[id] = true;
-                if (filter.contains(m["fk_table"].toString())) {
-                    const QVariantMap &f1 = filter[m["fk_table"].toString()].toMap();
-                    m_filter[id] = f1["id"].toString();
-                }
+                //                if (filter.contains(m["fk_table"].toString())) {
+                //                    const QVariantMap &f1 =
+                //                    filter[m["fk_table"].toString()].toMap(); m_filter[id] =
+                //                    f1["id"].toString();
+                //                }
             }
             m_captions[id] = m["caption"].toString();
         }
         emit connectInterface(resp["fields"]);
-        m_data["fields"] = mf;
+        // m_data["fields"] = mf;
         m_queries = resp["queries"].toList();
 
         reload();
     } else if (t == "insert") {
         emit setEnabled(true);
-        foreach (QVariant v, response["response"].toMap()[m_data["table"].toString()].toList()) {
+        foreach (QVariant v, response["response"].toMap()[m_model].toList()) {
             QVariantMap map = v.toMap();
             m_items["created_at"]->setValue(map["created_at"]);
             m_items["id"]->setValue(map["id"]);
-            m_data["filter"].toMap()["id"] = map["id"];
+            m_modelFilter->setValue(m_model, "id", map["id"]);
+            // m_data["filter"].toMap()["id"] = map["id"];
             m_isNew = false;
-            emit idChanged(m_model, map["id"].toString());
+            // emit idChanged(m_model, map["id"].toString());
             break;
         }
         for (QMap<QString, bool>::Iterator it = m_blockOnEdit.begin(); it != m_blockOnEdit.end();

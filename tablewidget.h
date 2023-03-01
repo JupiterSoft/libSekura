@@ -24,7 +24,7 @@ namespace Sekura {
         Q_OBJECT
 
       public:
-        explicit TableWidget(const QVariantMap &data, const RestSettings *settings,
+        explicit TableWidget(ModelFilter *filter, const RestSettings *settings,
                              QWidget *parent = nullptr);
         ~TableWidget();
 
@@ -49,7 +49,7 @@ namespace Sekura {
         Ui::TableWidget *ui;
         TableModel *m_model;
         const RestSettings *m_settings;
-        QVariantMap m_data;
+        // QVariantMap m_data;
         int m_mode;
     };
 

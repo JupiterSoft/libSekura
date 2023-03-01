@@ -4,6 +4,7 @@
  * Company: Jupiter Soft
  */
 #include "treemodel.h"
+#include "modelfilter.h"
 #include "restclient.h"
 
 #include <QQueue>
@@ -104,6 +105,15 @@ class TreeModel::TreeItem {
      */
     const QString &id() const { return m_id; }
 
+    QVariantMap values(const QVariantList &indx) const {
+        QVariantMap ret;
+        for (int i = 0; i < indx.size(); i++) {
+            ret[indx[i].toString()] = m_itemData[i];
+        }
+        ret["id"] = m_id;
+        return ret;
+    }
+
     /*!
      * \brief findId - найти подчиненный элемент по идентификатору
      * \param str - идентификатор
@@ -163,13 +173,16 @@ class TreeModel::TreeItem {
  * \param settings - настройки подключение
  * \param parent - родительский объект
  */
-TreeModel::TreeModel(const QVariantMap &params, const RestSettings *settings, QObject *parent)
+
+TreeModel::TreeModel(ModelFilter *filter, const RestSettings *settings, QObject *parent)
     : QAbstractItemModel{parent} {
     m_root = nullptr;
-    m_model = params["model"].toString();
+    m_modelFilter = filter;
+    m_model = m_modelFilter->value("temp", "model").toString();
     m_only_my = false;
-    if (params.contains("onlyMy"))
+    if (m_modelFilter->contains("temp", "onlyMy"))
         m_only_my = true;
+    connect(m_modelFilter, &ModelFilter::itemChanged, this, &TreeModel::filterChanged);
     /// TODO вместо строки использовать VariantMap передать параметр только мои
     m_client = new RestClient(settings, this);
     connect(m_client, &RestClient::success, this, &TreeModel::success);
@@ -181,7 +194,6 @@ TreeModel::TreeModel(const QVariantMap &params, const RestSettings *settings, QO
     map["type"] = "tree";
     m_client->request("/model", "GET", map);
 }
-
 TreeModel::~TreeModel() {
     if (m_root != nullptr)
         delete m_root;
@@ -317,6 +329,8 @@ QString TreeModel::code(const QModelIndex &index) {
         return "";
 
     TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+    QVariantMap m = item->values(m_view);
+    m_modelFilter->setValue(m_model, m);
 
     return item->id();
 }
@@ -362,6 +376,13 @@ void TreeModel::reload() {
     q["table"] = m_model;
     q["name"] = m_model;
     q["fields"] = m_fields;
+    m_filter.clear();
+    for (QVariantMap::ConstIterator it = m_filterFromDesc.constBegin();
+         it != m_filterFromDesc.constEnd(); ++it) {
+        const QVariantMap valr = m_modelFilter->value(it.key());
+        const QVariantMap temp = it->toMap();
+        m_filter[temp["mcol"].toString()] = valr[temp["rcol"].toString()].toString();
+    }
     /// TODO передать параметр только мои
     if (!m_filter.isEmpty()) {
         /// TODO set filter
@@ -372,7 +393,7 @@ void TreeModel::reload() {
                 first = false;
             else
                 str += " AND ";
-            str += it.key() + " = :" + it.key();
+            str += "a." + it.key() + " = :" + it.key();
         }
         q["filter"] = str;
         /// TODO set variables
@@ -415,6 +436,12 @@ void TreeModel::setFilter(const QVariantMap &filter) {
 void TreeModel::removeFromFilter(const QString &key) {
     m_filter.remove(key);
     reload();
+}
+
+void TreeModel::filterChanged(const QString &index, const QVariantMap &value) {
+    /// TODO вставить обработку
+    if (m_filterFromDesc.contains(index))
+        reload();
 }
 
 /*!

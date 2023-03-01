@@ -8,6 +8,7 @@
 #include "bottombuttonswidget.h"
 #include "bottomtablewidget.h"
 #include "lineedit.h"
+#include "modelfilter.h"
 #include "tablewidget.h"
 #include "ui_itemwidget.h"
 
@@ -24,18 +25,18 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родительская форма
  */
-ItemWidget::ItemWidget(const QVariantMap &map, const RestSettings *settings, QWidget *parent)
-    : BaseWidget(parent), ui(new Ui::ItemWidget), m_settings(settings) {
+ItemWidget::ItemWidget(ModelFilter *filter, const RestSettings *settings, QWidget *parent)
+    : BaseWidget(filter, parent), ui(new Ui::ItemWidget), m_settings(settings) {
     ui->setupUi(this);
-    m_model = new ItemModel(map, settings, this);
+    m_model = new ItemModel(filter, settings, this);
 
     connect(m_model, &ItemModel::connectInterface, this, &ItemWidget::connectInterface);
     connect(m_model, &ItemModel::setEnabled, this, &ItemWidget::setEnabled);
     connect(m_model, &ItemModel::parentReload, this, &ItemWidget::parentReload);
 
-    connect(m_model, &ItemModel::idChanged, this, &ItemWidget::idChanged);
+    // connect(m_model, &ItemModel::idChanged, this, &ItemWidget::idChanged);
 
-    this->setWindowTitle(map["title"].toString());
+    this->setWindowTitle(filter->value("temp", "caption").toString());
 }
 
 ItemWidget::~ItemWidget() {
@@ -59,12 +60,17 @@ void ItemWidget::changeId(const QString &table, const QString &id) {
  */
 void ItemWidget::connectInterface(const QVariant &val) {
     QVariantList fields = val.toList();
-    QVariantList mf;
     foreach (QVariant v, fields) {
         QVariantMap m = v.toMap();
         QString id = m["name"].toString();
-        mf << id;
         BaseItem *ptr = Sekura::Interface::createItem(m, this);
+        if (m_model->isNew() && m.contains("fk_table") &&
+            m_model->modelFilter()->contains(m["fk_table"].toString())) {
+            ptr->setValue(m_model->modelFilter()->value(m["fk_table"].toString(), "id"));
+            ptr->setViewValue(
+                m_model->modelFilter()->value(m["fk_table"].toString(), m["fk_view"].toString()));
+            /// TODO set read only item!!!
+        }
         if (ptr != nullptr) {
             ui->baseLayout->addWidget(ptr);
             m_model->setItem(id, ptr);
@@ -72,15 +78,15 @@ void ItemWidget::connectInterface(const QVariant &val) {
             if (le != nullptr) {
                 connect(le, &LineEdit::valueChanged, this, [this, le](const QVariant &val) {
                     qDebug() << "open windows for " << val.toString();
-                    QVariantMap map;
-                    map["model"] = val;
-                    map["title"] = tr("Select");
-                    map["select"] = true;
+                    m_modelFilter->remove("temp");
+                    m_modelFilter->setValue("temp", "caption", tr("Select"));
+                    m_modelFilter->setValue("temp", "model", val);
+                    m_modelFilter->setValue("temp", "select", true);
                     QDialog *dialog = new QDialog(this);
                     QVBoxLayout *layout = new QVBoxLayout(dialog);
                     layout->setSpacing(0);
                     layout->setContentsMargins(5, 5, 5, 5);
-                    TableWidget *widget = new TableWidget(map, m_settings, dialog);
+                    TableWidget *widget = new TableWidget(m_modelFilter, m_settings, dialog);
                     connect(widget, &TableWidget::selectedValues, le, &LineEdit::selectedValues);
                     layout->addWidget(widget);
                     dialog->exec();
@@ -115,6 +121,9 @@ void ItemWidget::saveForm() { m_model->save(); }
 void ItemWidget::closeForm() {
     if (m_mainForm)
         emit closeParent();
+    QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
+    if (dialog != nullptr)
+        dialog->reject();
     // close();
     // QMdiSubWindow *obj = qobject_cast<QMdiSubWindow *>(parentWidget());
     // if (obj != nullptr)

@@ -4,6 +4,7 @@
  * Company: Jupiter Soft
  */
 #include "tablemodel.h"
+#include "modelfilter.h"
 #include "restclient.h"
 #include "restsettings.h"
 
@@ -15,9 +16,39 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родительский объект
  */
-TableModel::TableModel(const QString &model, const RestSettings *settings, QObject *parent)
+TableModel::TableModel(ModelFilter *filter, const RestSettings *settings, QObject *parent)
     : QAbstractTableModel{parent} {
-    m_model = model;
+    m_modelFilter = filter;
+    m_model = m_modelFilter->value("temp", "model").toString();
+    // m_model = data["model"].toString();
+    // m_valueFromParent = data["filter"].toMap();
+    if (m_modelFilter->contains("temp", "filter")) {
+        // if (data.contains("desc_filter")) {
+        QVariantList list =
+            m_modelFilter->value("temp", "filter").toList(); // data["desc_filter"].toList();
+        foreach (QVariant var, list) {
+            QString str = var.toString();
+            if (str.contains("%id")) {
+
+            } else {
+                QStringList lst = str.split("=");
+                QString myId = lst[0].trimmed();
+                QStringList lst2 = lst[1].split(".");
+                QString table = lst2[0].trimmed();
+                QString tid = lst2[1].trimmed();
+                QVariantMap m;
+                m["mcol"] = myId;
+                m["rcol"] = tid;
+                m_filterFromDesc[table] = m;
+            }
+        }
+    }
+    // if (data.contains("parent")) {
+    //     m_valueFromParent = data["parent"].toMap();
+    // }
+    /// save data
+    // m_modelFilter = filter;
+    connect(m_modelFilter, &ModelFilter::itemChanged, this, &TableModel::filterChanged);
     m_client = new RestClient(settings, this);
     connect(m_client, &RestClient::success, this, &TableModel::success);
     connect(m_client, &RestClient::error, this, &TableModel::error);
@@ -37,22 +68,22 @@ TableModel::TableModel(const QString &model, const RestSettings *settings, QObje
  * \param filter - фильтр
  * \param parent - родительский объект
  */
-TableModel::TableModel(const QString &model, const RestSettings *settings,
-                       const QVariantMap &filter, QObject *parent)
-    : QAbstractTableModel{parent} {
-    m_model = model;
-    m_filter = filter;
-    m_client = new RestClient(settings, this);
-    connect(m_client, &RestClient::success, this, &TableModel::success);
-    connect(m_client, &RestClient::error, this, &TableModel::error);
-    m_viewCode = false;
-    m_initialized = false;
-    QVariantMap map;
-    map["transaction"] = "model";
-    map["model"] = m_model;
-    map["type"] = "table";
-    m_client->request("/model", "GET", map);
-}
+// TableModel::TableModel(const QString &model, const RestSettings *settings,
+//                        const QVariantMap &filter, QObject *parent)
+//     : QAbstractTableModel{parent} {
+//     m_model = model;
+//     m_filter = filter;
+//     m_client = new RestClient(settings, this);
+//     connect(m_client, &RestClient::success, this, &TableModel::success);
+//     connect(m_client, &RestClient::error, this, &TableModel::error);
+//     m_viewCode = false;
+//     m_initialized = false;
+//     QVariantMap map;
+//     map["transaction"] = "model";
+//     map["model"] = m_model;
+//     map["type"] = "table";
+//     m_client->request("/model", "GET", map);
+// }
 
 TableModel::~TableModel() { delete m_client; }
 
@@ -159,8 +190,10 @@ int TableModel::stretchField() const {
  */
 QString TableModel::code(const QModelIndex &index) const {
     int row = index.row();
-    if (row < m_codes.size())
+    if (row < m_codes.size()) {
+        m_modelFilter->setValue(m_model, m_data[row]);
         return m_codes[row];
+    }
     return "";
 }
 
@@ -185,6 +218,18 @@ void TableModel::reload() {
     q["table"] = m_model;
     q["name"] = m_model;
     q["fields"] = m_fields;
+    // QString str = "";
+    m_filter.clear();
+    for (QVariantMap::ConstIterator it = m_filterFromDesc.constBegin();
+         it != m_filterFromDesc.constEnd(); ++it) {
+        const QVariantMap temp = it->toMap();
+        if (m_modelFilter->contains(it.key())) {
+            const QVariantMap valr = m_modelFilter->value(it.key());
+            m_filter[temp["mcol"].toString()] = valr[temp["rcol"].toString()]; //.toString();
+        } else {
+            m_filter[temp["mcol"].toString()] = QVariant(QJsonValue()); ///< set null
+        }
+    }
     if (!m_filter.isEmpty()) {
         /// TODO set filter
         QString str;
@@ -194,7 +239,7 @@ void TableModel::reload() {
                 first = false;
             else
                 str += " AND ";
-            str += it.key() + " = :" + it.key();
+            str += "a." + it.key() + " = :" + it.key();
         }
         q["filter"] = str;
         /// TODO set variables
@@ -236,20 +281,26 @@ void TableModel::changeIndex(const QString &table, const QString &id) {
  * \brief TableModel::setFilter - установка постоянного фильтра
  * \param filter - фильтр
  */
-void TableModel::setFilter(const QVariantMap &filter) {
-    for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
-        m_filter[it.key()] = *it;
-    }
-    reload();
-}
+// void TableModel::setFilter(const QVariantMap &filter) {
+//     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
+//         m_filter[it.key()] = *it;
+//     }
+//     reload();
+// }
 
 /*!
  * \brief TableModel::removeFromFilter - удалить значение из фильтра
  * \param key - ключ
  */
-void TableModel::removeFromFilter(const QString &key) {
-    m_filter.remove(key);
-    reload();
+// void TableModel::removeFromFilter(const QString &key) {
+//     m_filter.remove(key);
+//     reload();
+// }
+
+void TableModel::filterChanged(const QString &index, const QVariantMap &value) {
+    /// TODO вставить обработку
+    if (m_filterFromDesc.contains(index))
+        reload();
 }
 
 /*!

@@ -18,7 +18,7 @@ namespace Sekura {
     class TreeModel : public QAbstractItemModel {
         Q_OBJECT
       public:
-        explicit TreeModel(const QVariantMap &map, const RestSettings *settings,
+        explicit TreeModel(ModelFilter *filter, const RestSettings *settings,
                            QObject *parent = nullptr);
         ~TreeModel();
 
@@ -54,6 +54,8 @@ namespace Sekura {
         void setFilter(const QVariantMap &filter);
         void removeFromFilter(const QString &key);
 
+        void filterChanged(const QString &index, const QVariantMap &value);
+
       protected slots:
         void success(const QJsonObject &obj);
         void error(const QJsonObject &obj);
@@ -73,6 +75,11 @@ namespace Sekura {
         QString m_form_edit;
         QMap<QString, QString> m_fk;
         bool m_only_my;
+
+        // model filter
+        ModelFilter *m_modelFilter;
+        QVariantMap m_filterFromDesc;
+        QVariantMap m_valueFromParent;
     };
 
 } // namespace Sekura

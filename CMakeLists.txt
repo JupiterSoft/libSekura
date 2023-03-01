@@ -96,6 +96,9 @@ add_library(
   bottomtablewidget.cpp
   bottomtablewidget.ui
   BottomTableWidget
+  modelfilter.h
+  modelfilter.cpp
+  ModelFilter
   resources.qrc)
 
 target_link_libraries(

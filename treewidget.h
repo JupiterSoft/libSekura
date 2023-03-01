@@ -25,7 +25,7 @@ namespace Sekura {
         Q_OBJECT
 
       public:
-        explicit TreeWidget(const QVariantMap &data, const RestSettings *settings,
+        explicit TreeWidget(ModelFilter *filter, const RestSettings *settings,
                             QWidget *parent = nullptr);
         ~TreeWidget();
 
@@ -41,7 +41,7 @@ namespace Sekura {
       private:
         Ui::TreeWidget *ui;
         const RestSettings *m_settings;
-        QVariantMap m_data;
+        // QVariantMap m_data;
         TreeModel *m_model;
     };
 

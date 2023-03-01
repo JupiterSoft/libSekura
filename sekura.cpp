@@ -10,6 +10,7 @@
 #include "itemwidget.h"
 #include "lineedit.h"
 #include "menu.h"
+#include "modelfilter.h"
 #include "spinbox.h"
 #include "tablewidget.h"
 #include "treewidget.h"
@@ -119,132 +120,134 @@ Menu *Interface::createMenu(QMenuBar *mb, const RestSettings *settings, QObject 
  * \param parent - родитель
  * \return созданный элемент управления
  */
-BaseWidget *privateParseWidgets(QVariantMap &ref, const QVariantMap &desc,
-                                const RestSettings *settings, const QVariantMap &map,
-                                QWidget *parent) {
+BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
+                                const RestSettings *settings, QWidget *parent) {
     BaseWidget *ret = nullptr;
-    QVariantMap temp = map;
+    // QVariantMap temp; // = map;
     QString str = desc["type"].toString();
+    bool mf_created = false;
+    if (mfilter == nullptr) {
+        mfilter = new ModelFilter;
+        mf_created = true;
+    }
     if ((str == "Table") || (str == "Tree") || (str == "Item")) {
-        temp["model"] = desc["model"];
-        QVariantMap filter, f1;
-        if (temp.contains("filter"))
-            f1 = temp["filter"].toMap();
+        //        temp["model"] = desc["model"];
+
+        /// установить настройки в фильтр
+        mfilter->remove("temp");
+        mfilter->setValue("temp", "model", desc["model"]);
+        mfilter->setValue("temp", "caption", desc["caption"]);
         if (desc.contains("filter")) {
-            foreach (QVariant f, desc["filter"].toList()) {
-                QString str = f.toString();
-                QStringList sl = str.split("=");
-                QString key = sl[0].trimmed();
-                QString val = sl[1].trimmed();
-                if (ref.contains(val)) {
-                    filter[key] = ref[val];
-                } else if (f1.contains(key)) {
-                    filter[key] = f1[key];
-                }
-            }
+            mfilter->setValue("temp", "filter", desc["filter"]);
         }
-        temp["filter"] = filter;
-        if (filter.contains("id")) {
-            ref[temp["model"].toString() + ".id"] = filter["id"];
-        }
+
+        /// создать необходимый widget
         if (str == "Table") {
-            ret = new TableWidget(temp, settings, parent);
+            ret = new TableWidget(mfilter, settings, parent);
         } else if (str == "Tree") {
-            ret = new TreeWidget(temp, settings, parent);
+            ret = new TreeWidget(mfilter, settings, parent);
         } else if (str == "Item") {
-            ret = new ItemWidget(temp, settings, parent);
+            /// не фильтруется
+            ret = new ItemWidget(mfilter, settings, parent);
         }
         if (ret != nullptr) {
             if (desc.contains("main"))
                 ret->setMainForm(true);
         }
-    } else if (str == "Box") {
-        ret = new BaseWidget(parent);
-        ret->setWindowTitle(map["title"].toString());
-        QString direction = desc["direction"].toString();
-        QLayout *layout;
-        if (direction == "H") {
+    } else {
+        ret = new BaseWidget(mfilter, parent);
+        if (mfilter->contains("temp", "caption"))
+            ret->setWindowTitle(mfilter->value("temp", "caption").toString());
+
+        if (str == "Box") {
+            QString direction = desc["direction"].toString();
+            QLayout *layout;
+            if (direction == "H") {
+                layout = new QHBoxLayout(ret);
+                layout->setSpacing(0);
+                layout->setContentsMargins(5, 5, 5, 5);
+            } else {
+                layout = new QVBoxLayout(ret);
+                layout->setSpacing(0);
+                layout->setContentsMargins(5, 5, 5, 5);
+            }
+            foreach (QVariant v, desc["childs"].toList()) {
+                QVariantMap m = v.toMap();
+                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                if (w != nullptr) {
+                    layout->addWidget(w);
+                    QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
+                    QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                    QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
+                    // QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
+                    // QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
+                }
+            }
+        } else if (str == "Splitter") {
+            QString direction = desc["direction"].toString();
+            QSplitter *layout = new QSplitter(ret);
+            if (direction == "H") {
+                // layout = new QHBoxLayout(ret);
+                // layout->setSpacing(0);
+                layout->setOrientation(Qt::Horizontal);
+                layout->setContentsMargins(5, 5, 5, 5);
+            } else {
+                // layout = new QVBoxLayout(ret);
+                // layout->setSpacing(0);
+                layout->setOrientation(Qt::Vertical);
+                layout->setContentsMargins(5, 5, 5, 5);
+            }
+            foreach (QVariant v, desc["childs"].toList()) {
+                QVariantMap m = v.toMap();
+                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                if (w != nullptr) {
+                    layout->addWidget(w);
+                    QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
+                    QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                    QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
+                    // QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
+                    // QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
+                }
+            }
+        } else if (str == "Scroll") {
+            QLayout *layout;
             layout = new QHBoxLayout(ret);
             layout->setSpacing(0);
             layout->setContentsMargins(5, 5, 5, 5);
-        } else {
-            layout = new QVBoxLayout(ret);
-            layout->setSpacing(0);
-            layout->setContentsMargins(5, 5, 5, 5);
-        }
-        foreach (QVariant v, desc["childs"].toList()) {
-            QVariantMap m = v.toMap();
-            BaseWidget *w = privateParseWidgets(ref, m, settings, map, parent);
-            if (w != nullptr) {
-                layout->addWidget(w);
-                QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
-                QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
-                QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
-                QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
-                QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
-            }
-        }
-    } else if (str == "Splitter") {
-        ret = new BaseWidget(parent);
-        ret->setWindowTitle(map["title"].toString());
-        QString direction = desc["direction"].toString();
-        QSplitter *layout = new QSplitter(ret);
-        if (direction == "H") {
-            // layout = new QHBoxLayout(ret);
-            // layout->setSpacing(0);
-            layout->setOrientation(Qt::Horizontal);
-            layout->setContentsMargins(5, 5, 5, 5);
-        } else {
-            // layout = new QVBoxLayout(ret);
-            // layout->setSpacing(0);
-            layout->setOrientation(Qt::Vertical);
-            layout->setContentsMargins(5, 5, 5, 5);
-        }
-        foreach (QVariant v, desc["childs"].toList()) {
-            QVariantMap m = v.toMap();
-            BaseWidget *w = privateParseWidgets(ref, m, settings, map, parent);
-            if (w != nullptr) {
-                layout->addWidget(w);
-                QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
-                QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
-                QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
-                QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
-                QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
-            }
-        }
-    } else if (str == "Scroll") {
-        ret = new BaseWidget(parent);
-        ret->setWindowTitle(map["title"].toString());
-        QLayout *layout;
-        layout = new QHBoxLayout(ret);
-        layout->setSpacing(0);
-        layout->setContentsMargins(5, 5, 5, 5);
-        QScrollArea *scroll = new QScrollArea(ret);
-        layout->addWidget(scroll);
-        QString direction = desc["direction"].toString();
+            QScrollArea *scroll = new QScrollArea(ret);
+            layout->addWidget(scroll);
+            QString direction = desc["direction"].toString();
 
-        if (direction == "H") {
-            scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        } else if (direction == "V") {
-            scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        } else {
-        }
-        scroll->setWidgetResizable(true);
-        foreach (QVariant v, desc["childs"].toList()) {
-            QVariantMap m = v.toMap();
-            BaseWidget *w = privateParseWidgets(ref, m, settings, map, parent);
-            if (w != nullptr) {
-                scroll->setWidget(w);
-                QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
-                QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
-                QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
-                QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
-                QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
-                break;
+            if (direction == "H") {
+                scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+            } else if (direction == "V") {
+                scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+                scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+            } else {
+            }
+            scroll->setWidgetResizable(true);
+            foreach (QVariant v, desc["childs"].toList()) {
+                QVariantMap m = v.toMap();
+                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                if (w != nullptr) {
+                    scroll->setWidget(w);
+                    QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
+                    QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                    QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
+                    // QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
+                    // QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
+                    break;
+                }
             }
         }
+    }
+
+    if (mf_created) {
+        if (ret != nullptr)
+            ret->setFilter(mfilter);
+        else if (mfilter->ref() <= 0)
+            delete mfilter;
     }
 
     return ret;
@@ -258,11 +261,10 @@ BaseWidget *privateParseWidgets(QVariantMap &ref, const QVariantMap &desc,
  * \param parent - родительская форма
  * \return новая форма
  */
-BaseWidget *Interface::createWidget(const QString &desc, const RestSettings *settings,
-                                    const QVariantMap &map, QWidget *parent) {
+BaseWidget *Interface::createWidget(ModelFilter *ref, const QString &desc,
+                                    const RestSettings *settings, QWidget *parent) {
     QVariantMap vals = QJsonDocument::fromJson(desc.toUtf8()).object().toVariantMap();
-    QVariantMap ref;
-    BaseWidget *ptr = privateParseWidgets(ref, vals, settings, map, parent);
+    BaseWidget *ptr = privateParseWidgets(ref, vals, settings, parent);
     if (ptr != nullptr)
         ptr->setMainForm(true);
 

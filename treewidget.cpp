@@ -5,6 +5,7 @@
  */
 #include "treewidget.h"
 
+#include "modelfilter.h"
 #include "ui_treewidget.h"
 #include <QTimer>
 
@@ -16,12 +17,12 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родительскйи объект
  */
-TreeWidget::TreeWidget(const QVariantMap &data, const RestSettings *settings, QWidget *parent)
-    : BaseWidget(parent), ui(new Ui::TreeWidget), m_settings(settings), m_data(data) {
+TreeWidget::TreeWidget(ModelFilter *filter, const RestSettings *settings, QWidget *parent)
+    : BaseWidget(filter, parent), ui(new Ui::TreeWidget), m_settings(settings) {
     ui->setupUi(this);
-    m_model = new TreeModel(m_data, settings, this);
+    m_model = new TreeModel(filter, settings, this);
     ui->treeView->setModel(m_model);
-    this->setWindowTitle(m_data["title"].toString());
+    this->setWindowTitle(filter->value("temp", "caption").toString());
     if (m_model->isInitialized()) {
         int m = m_model->stretchField();
         if (m != -1) {
@@ -75,12 +76,14 @@ TreeWidget::~TreeWidget() { delete ui; }
  * \brief TreeWidget::on_pbAdd_clicked - добавление нового элемента
  */
 void TreeWidget::on_pbAdd_clicked() {
-    QVariantMap data = m_data;
-    QVariantMap filter;
-    data["filter"] = filter;
-    // ItemWidget *item =
-    // new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
-    BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+    // QVariantMap data = m_data;
+    // QVariantMap filter;
+    // data["filter"] = filter;
+    //  ItemWidget *item =
+    //  new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
+    m_modelFilter->setValue(m_model->model(), "isNew", true);
+    BaseWidget *item =
+        Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
     connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
     emit appendWidget(item);
 }
@@ -91,14 +94,10 @@ void TreeWidget::on_pbAdd_clicked() {
 void TreeWidget::on_pbEdit_clicked() {
     QModelIndexList selection = ui->treeView->selectionModel()->selectedIndexes();
     foreach (QModelIndex sel, selection) {
-        qDebug() << m_model->code(sel);
         QString code = m_model->code(sel);
-        QVariantMap data = m_data;
-        QVariantMap filter;
-        filter["id"] = code;
-        data["filter"] = filter;
-        // ItemWidget *item = new ItemWidget(data, m_settings, this);
-        BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+        qDebug() << code;
+        BaseWidget *item =
+            Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
         emit appendWidget(item);
         break;

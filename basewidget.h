@@ -6,6 +6,7 @@
 #ifndef SEKURA_BASEWIDGET_H
 #define SEKURA_BASEWIDGET_H
 
+#include "sekura.h"
 #include <QWidget>
 
 namespace Sekura {
@@ -16,9 +17,13 @@ namespace Sekura {
     class BaseWidget : public QWidget {
         Q_OBJECT
       public:
-        explicit BaseWidget(QWidget *parent = nullptr);
+        explicit BaseWidget(ModelFilter *filter, QWidget *parent = nullptr);
+        virtual ~BaseWidget();
+
         void setMainForm(bool m) { m_mainForm = m; }
         bool mainForm() const { return m_mainForm; }
+        ModelFilter *filter() { return m_modelFilter; }
+        void setFilter(ModelFilter *filter);
 
       signals:
         void appendWidget(Sekura::BaseWidget *);
@@ -31,6 +36,8 @@ namespace Sekura {
 
       protected:
         bool m_mainForm;
+        ModelFilter *m_modelFilter;
+        bool m_filterIsMy;
     };
 
 } // namespace Sekura

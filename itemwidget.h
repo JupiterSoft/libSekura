@@ -24,7 +24,7 @@ namespace Sekura {
         Q_OBJECT
 
       public:
-        explicit ItemWidget(const QVariantMap &map, const RestSettings *settings,
+        explicit ItemWidget(ModelFilter *filter, const RestSettings *settings,
                             QWidget *parent = nullptr);
         ~ItemWidget();
 

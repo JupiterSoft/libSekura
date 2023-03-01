@@ -17,10 +17,11 @@ namespace Sekura {
     class TableModel : public QAbstractTableModel {
         Q_OBJECT
       public:
-        explicit TableModel(const QString &model, const RestSettings *settings,
+        explicit TableModel(ModelFilter *filter, const RestSettings *settings,
                             QObject *parent = nullptr);
-        TableModel(const QString &model, const RestSettings *settings, const QVariantMap &filter,
-                   QObject *parent = nullptr);
+        //        TableModel(const QString &model, const RestSettings *settings, const QVariantMap
+        //        &filter,
+        //                   QObject *parent = nullptr);
         ~TableModel();
 
         int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -54,8 +55,10 @@ namespace Sekura {
         void initialized();
 
       public slots:
-        void setFilter(const QVariantMap &filter);
-        void removeFromFilter(const QString &key);
+        // void setFilter(const QVariantMap &filter);
+        // void removeFromFilter(const QString &key);
+
+        void filterChanged(const QString &index, const QVariantMap &value);
 
       protected slots:
         void success(const QJsonObject &);
@@ -75,6 +78,11 @@ namespace Sekura {
         bool m_initialized;
         bool m_viewCode;
         QString m_form_edit;
+
+        // model filter
+        ModelFilter *m_modelFilter;
+        QVariantMap m_filterFromDesc;
+        QVariantMap m_valueFromParent;
 
         RestClient *m_client;
     };

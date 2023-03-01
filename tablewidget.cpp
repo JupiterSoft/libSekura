@@ -4,6 +4,7 @@
  * Company: Jupiter Soft
  */
 #include "tablewidget.h"
+#include "modelfilter.h"
 #include "tablemodel.h"
 #include "ui_tablewidget.h"
 #include <QDialog>
@@ -17,24 +18,19 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родительский объект
  */
-TableWidget::TableWidget(const QVariantMap &data, const RestSettings *settings, QWidget *parent)
-    : BaseWidget(parent), ui(new Ui::TableWidget), m_settings(settings), m_data(data) {
+TableWidget::TableWidget(ModelFilter *filter, const RestSettings *settings, QWidget *parent)
+    : BaseWidget(filter, parent), ui(new Ui::TableWidget), m_settings(settings) {
     ui->setupUi(this);
     m_mode = 0; ///< Просмотр в таблице
-    if (m_data.contains("select")) {
-        ui->gbTop->setVisible(false);
+    if (m_modelFilter->contains("temp", "select")) {
+        // ui->gbTop->setVisible(false);
         m_mode = 1; ///< выбор в таблице
     } else {
         ui->gbBottom->setVisible(false);
     }
-    if (data.contains("filter")) {
-        m_model =
-            new TableModel(m_data["model"].toString(), settings, m_data["filter"].toMap(), this);
-    } else {
-        m_model = new TableModel(m_data["model"].toString(), settings, this);
-    }
+    m_model = new TableModel(m_modelFilter, settings, this);
     ui->tableView->setModel(m_model);
-    this->setWindowTitle(m_data["title"].toString());
+    this->setWindowTitle(m_modelFilter->value("temp", "caption").toString());
     if (m_model->isInitialized()) {
         int m = m_model->stretchField();
         if (m != -1) {
@@ -90,16 +86,30 @@ TableWidget::~TableWidget() { delete ui; }
  */
 void TableWidget::on_pbAdd_clicked() {
     /// TODO добавить вставку
-    QVariantMap data = m_data;
-    // QVariantMap filter;
-    // data["filter"] = filter;
-    //  ItemWidget *item =
-    //      new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
-
-    BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+    // QVariantMap data = m_data;
+    // data["filter"] = m_modelFilter->values();
+    m_modelFilter->setValue("temp", "model", m_model->model());
+    m_modelFilter->setValue(m_model->model(), "isNew", true);
+    BaseWidget *item =
+        Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
 
     connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
-    emit appendWidget(item);
+    QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
+    if (dialog == nullptr)
+        emit appendWidget(item);
+    else {
+        /// TODO Создать диалог
+        QDialog *dialog = new QDialog(this);
+        item->setParent(dialog);
+        QVBoxLayout *layout = new QVBoxLayout(dialog);
+        layout->setSpacing(0);
+        layout->setContentsMargins(5, 5, 5, 5);
+        layout->addWidget(item);
+        dialog->exec();
+
+        delete item;
+        delete dialog;
+    }
 }
 
 /*!
@@ -108,13 +118,13 @@ void TableWidget::on_pbAdd_clicked() {
 void TableWidget::on_pbEdit_clicked() {
     QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
     foreach (QModelIndex sel, selection) {
-        qDebug() << m_model->code(sel);
         QString code = m_model->code(sel);
-        QVariantMap data = m_data;
-        QVariantMap filter;
-        filter["id"] = code;
-        data["filter"] = filter;
-        BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+        qDebug() << code;
+        // QVariantMap data = m_data;
+        // data["filter"] = m_modelFilter->values();
+        m_modelFilter->setValue("temp", "model", m_model->model());
+        BaseWidget *item =
+            Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
         item->setMainForm(true);
         // ItemWidget *item = new ItemWidget(data, m_settings, this);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
@@ -143,8 +153,8 @@ void TableWidget::on_pbSelect_clicked() {
     if (dialog != nullptr) {
         QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
         foreach (QModelIndex sel, selection) {
-            qDebug() << m_model->code(sel);
             QString code = m_model->code(sel);
+            qDebug() << code;
             QString value = m_model->value(sel);
             emit selectedValues(code, value);
             dialog->accept();
@@ -169,9 +179,9 @@ void TableWidget::on_pbClose_clicked() {
  */
 void TableWidget::on_tableView_clicked(const QModelIndex &index) {
     QString code = m_model->code(index);
-    if (!code.isEmpty()) {
-        emit idChanged(m_model->model(), code);
-    }
+    // if (!code.isEmpty()) {
+    // emit idChanged(m_model->model(), code);
+    //}
 }
 
 /*!
@@ -182,13 +192,13 @@ void TableWidget::on_tableView_doubleClicked(const QModelIndex &index) {
     if (m_mode == 1)
         on_pbSelect_clicked();
     else if (m_mode == 0) {
-        qDebug() << m_model->code(index);
         QString code = m_model->code(index);
-        QVariantMap data = m_data;
-        QVariantMap filter;
-        filter["id"] = code;
-        data["filter"] = filter;
-        BaseWidget *item = Interface::createWidget(m_model->formEdit(), m_settings, data, this);
+        qDebug() << code;
+        // QVariantMap data = m_data;
+        // data["filter"] = m_modelFilter->values();
+        m_modelFilter->setValue("temp", "model", m_model->model());
+        BaseWidget *item =
+            Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
         item->setMainForm(true);
         // ItemWidget *item = new ItemWidget(data, m_settings, this);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });

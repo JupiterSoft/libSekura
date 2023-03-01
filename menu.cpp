@@ -4,6 +4,7 @@
  * Company: Jupiter Soft
  */
 #include "menu.h"
+#include "modelfilter.h"
 
 using namespace Sekura;
 
@@ -15,10 +16,10 @@ using namespace Sekura;
  */
 Menu::Menu(QMenuBar *mb, const RestSettings *settings, QObject *parent)
     : QObject{parent}, m_menuBar(mb), m_settings(settings) {
-    QVariantMap map;
-    map["model"] = "a_menus";
-    map["onlyMy"] = true;
-    m_menu = new TreeModel(map, settings, this);
+    ModelFilter *filter = new ModelFilter(this);
+    filter->setValue("temp", "model", "a_menus");
+    filter->setValue("temp", "onlyMy", true);
+    m_menu = new TreeModel(filter, settings, this);
     connect(m_menu, &TreeModel::layoutChanged, this, &Menu::startCreateMenu);
 }
 
@@ -45,9 +46,8 @@ void Menu::triggered() {
     QAction *action = qobject_cast<QAction *>(sender());
     if (m_actions.contains(action)) {
         QString val = m_actions[action];
-        QVariantMap args;
-        args["title"] = action->text();
-        BaseWidget *widget = Interface::createWidget(val, m_settings, args);
+        BaseWidget *widget = Interface::createWidget(nullptr, val, m_settings);
+        widget->setWindowTitle(action->text());
         if (widget != nullptr) {
             emit childCreated(widget);
         } else {
