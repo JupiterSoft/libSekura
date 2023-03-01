@@ -7,6 +7,7 @@
 
 #include "modelfilter.h"
 #include "ui_treewidget.h"
+#include <QDialog>
 #include <QTimer>
 
 using namespace Sekura;
@@ -75,18 +76,7 @@ TreeWidget::~TreeWidget() { delete ui; }
 /*!
  * \brief TreeWidget::on_pbAdd_clicked - добавление нового элемента
  */
-void TreeWidget::on_pbAdd_clicked() {
-    // QVariantMap data = m_data;
-    // QVariantMap filter;
-    // data["filter"] = filter;
-    //  ItemWidget *item =
-    //  new ItemWidget(data, m_settings, this); // Item2VWidget Item2HWidget Item3HWidget
-    m_modelFilter->setValue(m_model->model(), "isNew", true);
-    BaseWidget *item =
-        Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
-    connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
-    emit appendWidget(item);
-}
+void TreeWidget::on_pbAdd_clicked() { openOnEdit(); }
 
 /*!
  * \brief TreeWidget::on_pbEdit_clicked - редактирование элемента
@@ -94,12 +84,7 @@ void TreeWidget::on_pbAdd_clicked() {
 void TreeWidget::on_pbEdit_clicked() {
     QModelIndexList selection = ui->treeView->selectionModel()->selectedIndexes();
     foreach (QModelIndex sel, selection) {
-        QString code = m_model->code(sel);
-        qDebug() << code;
-        BaseWidget *item =
-            Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
-        connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
-        emit appendWidget(item);
+        openOnEdit(sel);
         break;
     }
 }
@@ -114,12 +99,50 @@ void TreeWidget::on_pbDel_clicked() {
     }
 }
 
+void TreeWidget::on_treeView_clicked(const QModelIndex &index) { m_model->code(index); }
+
+void TreeWidget::on_treeView_doubleClicked(const QModelIndex &index) { openOnEdit(index); }
+
+void TreeWidget::openOnEdit(const QModelIndex &index) {
+    if (index.isValid()) {
+        QString code = m_model->code(index);
+        qDebug() << code;
+        ModelFilter *mf = new ModelFilter(m_modelFilter);
+        mf->setValue("temp", "model", m_model->model());
+        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), m_settings, this);
+        connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
+        emit appendWidget(item);
+    } else {
+        ModelFilter *mf = new ModelFilter(m_modelFilter);
+        mf->setValue("temp", "model", m_model->model());
+        mf->setValue(m_model->model(), "isNew", true);
+        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), m_settings, this);
+        connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
+        QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
+        if (dialog == nullptr)
+            emit appendWidget(item);
+        else {
+            /// TODO Создать диалог
+            QDialog *dialog = new QDialog(this);
+            item->setParent(dialog);
+            QVBoxLayout *layout = new QVBoxLayout(dialog);
+            layout->setSpacing(0);
+            layout->setContentsMargins(5, 5, 5, 5);
+            layout->addWidget(item);
+            dialog->exec();
+
+            delete item;
+            delete dialog;
+        }
+    }
+}
+
 /*!
  * \brief TreeWidget::changeId - обработка события изменения индекса в связанной таблице
  * \param table - таблица
  * \param id - новый индекс
  */
-void TreeWidget::changeId(const QString &table, const QString &id) {
-    qDebug() << m_model->model() << table << id;
-    m_model->changeIndex(table, id);
-}
+// void TreeWidget::changeId(const QString &table, const QString &id) {
+//     qDebug() << m_model->model() << table << id;
+//     m_model->changeIndex(table, id);
+// }

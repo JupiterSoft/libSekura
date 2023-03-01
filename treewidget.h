@@ -36,7 +36,13 @@ namespace Sekura {
         void on_pbEdit_clicked();
         void on_pbDel_clicked();
 
-        void changeId(const QString &table, const QString &id) override;
+        void on_treeView_clicked(const QModelIndex &index);
+        void on_treeView_doubleClicked(const QModelIndex &index);
+
+        // void changeId(const QString &table, const QString &id) override;
+
+      protected:
+        void openOnEdit(const QModelIndex &index = QModelIndex());
 
       private:
         Ui::TreeWidget *ui;

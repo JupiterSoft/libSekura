@@ -28,9 +28,9 @@ namespace Sekura {
         m_modelFilter->addRef();
     }
 
-    void BaseWidget::changeId(const QString &table, const QString &id) {
-        Q_UNUSED(table)
-        Q_UNUSED(id)
-    }
+    //    void BaseWidget::changeId(const QString &table, const QString &id) {
+    //        Q_UNUSED(table)
+    //        Q_UNUSED(id)
+    //    }
 
 } // namespace Sekura

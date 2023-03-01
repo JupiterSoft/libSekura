@@ -9,6 +9,11 @@ namespace Sekura {
 
     ModelFilter::ModelFilter(QObject *parent) : QObject{parent} { m_ref = 0; }
 
+    ModelFilter::ModelFilter(ModelFilter *copy, QObject *parent) {
+        m_filter = copy->m_filter;
+        m_ref = 0;
+    }
+
     const QVariantMap ModelFilter::value(const QString &index) const {
         return m_filter[index].toMap();
     }

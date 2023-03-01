@@ -9,6 +9,7 @@
 #include "basewidget.h"
 #include "restsettings.h"
 
+#include <QModelIndex>
 #include <QWidget>
 
 namespace Sekura {
@@ -43,7 +44,8 @@ namespace Sekura {
 
         void on_tableView_doubleClicked(const QModelIndex &index);
 
-        void changeId(const QString &table, const QString &id) override;
+      protected:
+        void openToEdit(const QModelIndex &index = QModelIndex());
 
       private:
         Ui::TableWidget *ui;

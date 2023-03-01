@@ -84,33 +84,7 @@ TableWidget::~TableWidget() { delete ui; }
 /*!
  * \brief TableWidget::on_pbAdd_clicked - нажатие на кнопку добавить
  */
-void TableWidget::on_pbAdd_clicked() {
-    /// TODO добавить вставку
-    // QVariantMap data = m_data;
-    // data["filter"] = m_modelFilter->values();
-    m_modelFilter->setValue("temp", "model", m_model->model());
-    m_modelFilter->setValue(m_model->model(), "isNew", true);
-    BaseWidget *item =
-        Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
-
-    connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
-    QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
-    if (dialog == nullptr)
-        emit appendWidget(item);
-    else {
-        /// TODO Создать диалог
-        QDialog *dialog = new QDialog(this);
-        item->setParent(dialog);
-        QVBoxLayout *layout = new QVBoxLayout(dialog);
-        layout->setSpacing(0);
-        layout->setContentsMargins(5, 5, 5, 5);
-        layout->addWidget(item);
-        dialog->exec();
-
-        delete item;
-        delete dialog;
-    }
-}
+void TableWidget::on_pbAdd_clicked() { openToEdit(); }
 
 /*!
  * \brief TableWidget::on_pbEdit_clicked - нажатие на кнопку редактировать
@@ -118,20 +92,9 @@ void TableWidget::on_pbAdd_clicked() {
 void TableWidget::on_pbEdit_clicked() {
     QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
     foreach (QModelIndex sel, selection) {
-        QString code = m_model->code(sel);
-        qDebug() << code;
-        // QVariantMap data = m_data;
-        // data["filter"] = m_modelFilter->values();
-        m_modelFilter->setValue("temp", "model", m_model->model());
-        BaseWidget *item =
-            Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
-        item->setMainForm(true);
-        // ItemWidget *item = new ItemWidget(data, m_settings, this);
-        connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
-        emit appendWidget(item);
+        openToEdit(sel);
         break;
     }
-    /// TODO добавить редактирование
 }
 
 /*!
@@ -177,12 +140,7 @@ void TableWidget::on_pbClose_clicked() {
  * индекса
  * \param index - индекс
  */
-void TableWidget::on_tableView_clicked(const QModelIndex &index) {
-    QString code = m_model->code(index);
-    // if (!code.isEmpty()) {
-    // emit idChanged(m_model->model(), code);
-    //}
-}
+void TableWidget::on_tableView_clicked(const QModelIndex &index) { m_model->code(index); }
 
 /*!
  * \brief TableWidget::on_tableView_doubleClicked - двойное нажатие в режиме выбора элемента
@@ -192,17 +150,42 @@ void TableWidget::on_tableView_doubleClicked(const QModelIndex &index) {
     if (m_mode == 1)
         on_pbSelect_clicked();
     else if (m_mode == 0) {
+        openToEdit(index);
+    }
+}
+
+void TableWidget::openToEdit(const QModelIndex &index) {
+    if (index.isValid()) {
         QString code = m_model->code(index);
         qDebug() << code;
-        // QVariantMap data = m_data;
-        // data["filter"] = m_modelFilter->values();
-        m_modelFilter->setValue("temp", "model", m_model->model());
-        BaseWidget *item =
-            Interface::createWidget(m_modelFilter, m_model->formEdit(), m_settings, this);
+        ModelFilter *mf = new ModelFilter(m_modelFilter);
+        mf->setValue("temp", "model", m_model->model());
+        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), m_settings, this);
         item->setMainForm(true);
-        // ItemWidget *item = new ItemWidget(data, m_settings, this);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
         emit appendWidget(item);
+    } else {
+        ModelFilter *mf = new ModelFilter(m_modelFilter);
+        mf->setValue("temp", "model", m_model->model());
+        mf->setValue(m_model->model(), "isNew", true);
+        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), m_settings, this);
+        connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
+        QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
+        if (dialog == nullptr)
+            emit appendWidget(item);
+        else {
+            /// TODO Создать диалог
+            QDialog *dialog = new QDialog(this);
+            item->setParent(dialog);
+            QVBoxLayout *layout = new QVBoxLayout(dialog);
+            layout->setSpacing(0);
+            layout->setContentsMargins(5, 5, 5, 5);
+            layout->addWidget(item);
+            dialog->exec();
+
+            delete item;
+            delete dialog;
+        }
     }
 }
 
@@ -211,7 +194,7 @@ void TableWidget::on_tableView_doubleClicked(const QModelIndex &index) {
  * \param table - таблица
  * \param id - индекс
  */
-void TableWidget::changeId(const QString &table, const QString &id) {
-    qDebug() << m_model->model() << table << id;
-    m_model->changeIndex(table, id);
-}
+// void TableWidget::changeId(const QString &table, const QString &id) {
+//     qDebug() << m_model->model() << table << id;
+//     m_model->changeIndex(table, id);
+// }

@@ -49,10 +49,10 @@ ItemWidget::~ItemWidget() {
  * \param table - название таблицы
  * \param id - код
  */
-void ItemWidget::changeId(const QString &table, const QString &id) {
-    Q_UNUSED(table)
-    Q_UNUSED(id)
-}
+// void ItemWidget::changeId(const QString &table, const QString &id) {
+//     Q_UNUSED(table)
+//     Q_UNUSED(id)
+// }
 
 /*!
  * \brief ItemWidget::connectInterface - функция создания интерфейса

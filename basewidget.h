@@ -29,10 +29,10 @@ namespace Sekura {
         void appendWidget(Sekura::BaseWidget *);
         void parentReload();
         void closeParent();
-        void idChanged(const QString &table, const QString &id);
+        // void idChanged(const QString &table, const QString &id);
 
       public slots:
-        virtual void changeId(const QString &table, const QString &id);
+        // virtual void changeId(const QString &table, const QString &id);
 
       protected:
         bool m_mainForm;

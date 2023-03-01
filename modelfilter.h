@@ -15,6 +15,7 @@ namespace Sekura {
         Q_OBJECT
       public:
         explicit ModelFilter(QObject *parent = nullptr);
+        ModelFilter(ModelFilter *copy, QObject *parent = nullptr);
 
         const QVariantMap value(const QString &table) const;
         const QVariant value(const QString &table, const QString &index) const;
