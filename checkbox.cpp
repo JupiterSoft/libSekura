@@ -20,4 +20,6 @@ namespace Sekura {
 
     void CheckBox::setCaption(const QString &str) { ui->checkBox->setText(str); }
 
+    void CheckBox::setReadOnly() { setDisabled(true); }
+
 } // namespace Sekura

@@ -31,6 +31,8 @@ namespace Sekura {
         void setCaption(const QString &str) override;
         void setViewValue(const QVariant &) override{};
 
+        void setReadOnly() override;
+
       private:
         Ui::CheckBox *ui;
     };

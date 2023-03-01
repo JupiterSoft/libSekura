@@ -46,3 +46,5 @@ void SpinBox::setCaption(const QString &str) { ui->label->setText(str); }
  * \return значение элемента
  */
 QVariant SpinBox::value() const { return ui->spinBox->value(); }
+
+void SpinBox::setReadOnly() { ui->spinBox->setReadOnly(true); }

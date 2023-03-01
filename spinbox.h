@@ -30,6 +30,7 @@ namespace Sekura {
         void setCaption(const QString &str) override;
         QVariant value() const override;
         void setViewValue(const QVariant &) override{};
+        void setReadOnly() override;
 
       private:
         Ui::SpinBox *ui;

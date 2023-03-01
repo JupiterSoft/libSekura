@@ -22,6 +22,7 @@ namespace Sekura {
         virtual void setValue(const QVariant &) = 0;
         virtual QVariant value() const = 0;
         virtual void setViewValue(const QVariant &) = 0;
+        virtual void setReadOnly() = 0;
 
       signals:
         void valueChanged(QVariant);

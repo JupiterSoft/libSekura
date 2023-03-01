@@ -21,3 +21,5 @@ void DateTimeEdit::setValue(const QVariant &dt) { ui->dateTimeEdit->setDateTime(
 QVariant DateTimeEdit::value() const { return ui->dateTimeEdit->dateTime(); }
 
 void DateTimeEdit::setCaption(const QString &str) { ui->label->setText(str); }
+
+void DateTimeEdit::setReadOnly() { ui->dateTimeEdit->setReadOnly(true); }

@@ -81,6 +81,11 @@ void LineEdit::setViewValue(const QVariant &val) {
         ui->lineEdit->setText(val.toString());
 }
 
+void LineEdit::setReadOnly() {
+    ui->lineEdit->setReadOnly(true);
+    ui->pushButton->setEnabled(false);
+}
+
 /*!
  * \brief LineEdit::selectedValues - устанавливает код и видимое значение
  * \param code - код

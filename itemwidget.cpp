@@ -70,6 +70,7 @@ void ItemWidget::connectInterface(const QVariant &val) {
             ptr->setViewValue(
                 m_model->modelFilter()->value(m["fk_table"].toString(), m["fk_view"].toString()));
             /// TODO set read only item!!!
+            ptr->setReadOnly();
         }
         if (ptr != nullptr) {
             ui->baseLayout->addWidget(ptr);

@@ -30,6 +30,7 @@ namespace Sekura {
         void setCaption(const QString &str) override;
         void setViewValue(const QVariant &) override;
         void setTable(const QString &str) { m_table = str; }
+        void setReadOnly() override;
 
       public slots:
         void selectedValues(const QString &code, const QString &value);

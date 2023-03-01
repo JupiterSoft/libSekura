@@ -29,6 +29,7 @@ namespace Sekura {
         QVariant value() const override;
         void setCaption(const QString &str) override;
         void setViewValue(const QVariant &) override{};
+        void setReadOnly() override;
 
       public slots:
 

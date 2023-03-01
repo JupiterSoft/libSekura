@@ -23,6 +23,8 @@ QVariant ComboBox::value() const { return m_item2id[ui->comboBox->currentIndex()
 
 void ComboBox::setCaption(const QString &str) { ui->label->setText(str); }
 
+void ComboBox::setReadOnly() { setDisabled(true); }
+
 /*!
  * \brief ComboBox::setModel - устанавливает возможные варианты выбора, необходимо учитывать что
  * выбирается id, а все остальное относится к имени
