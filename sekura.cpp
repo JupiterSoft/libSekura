@@ -22,7 +22,9 @@
 #include <QJsonObject>
 #include <QScrollArea>
 #include <QSplitter>
+#include <QTabWidget>
 #include <QTimer>
+#include <QToolBox>
 #include <QUuid>
 
 using namespace Sekura;
@@ -238,6 +240,40 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
                     // QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
                     // QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
                     break;
+                }
+            }
+        } else if (str == "Tab") {
+            QLayout *layout;
+            layout = new QHBoxLayout(ret);
+            layout->setSpacing(0);
+            layout->setContentsMargins(5, 5, 5, 5);
+            QTabWidget *tab = new QTabWidget(ret);
+            layout->addWidget(tab);
+            foreach (QVariant v, desc["childs"].toList()) {
+                QVariantMap m = v.toMap();
+                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                if (w != nullptr) {
+                    tab->addTab(w, m["caption"].toString());
+                    QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
+                    QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                    QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
+                }
+            }
+        } else if (str == "Tool") {
+            QLayout *layout;
+            layout = new QHBoxLayout(ret);
+            layout->setSpacing(0);
+            layout->setContentsMargins(5, 5, 5, 5);
+            QToolBox *tool = new QToolBox(ret);
+            layout->addWidget(tool);
+            foreach (QVariant v, desc["childs"].toList()) {
+                QVariantMap m = v.toMap();
+                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                if (w != nullptr) {
+                    tool->addItem(w, m["caption"].toString());
+                    QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
+                    QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                    QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
                 }
             }
         }
