@@ -46,10 +46,11 @@ namespace Sekura {
 
         const QString &model() const { return m_model; }
 
-        const QVector<QString> &viewData() const { return m_view_data; }
-        void setViewData(const QVector<QString> &v) { m_view_data = v; }
-        const QVector<QString> &headers() const { return m_headers; }
-        void setHeaders(const QVector<QString> &v) { m_headers = v; }
+        //        const QVector<QString> &viewData() const { return m_view_data; }
+        //        void setViewData(const QVector<QString> &v) { m_view_data = v; }
+        //        const QVector<QString> &headers() const { return m_headers; }
+        //        void setHeaders(const QVector<QString> &v) { m_headers = v; }
+        QList<int> headerIndex(const QVariantList &lst);
 
       signals:
         void initialized();

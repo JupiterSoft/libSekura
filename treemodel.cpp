@@ -418,25 +418,47 @@ void TreeModel::changeIndex(const QString &table, const QString &id) {
     }
 }
 
+QList<int> TreeModel::headerIndex(const QVariantList &lst) {
+    QList<int> ret;
+    foreach (QVariant v, lst) {
+        QString id = v.toString();
+        int i = 0;
+        bool finded = false;
+        foreach (QVariant mv, m_view) {
+            if (mv.toString() == id) {
+                finded = true;
+                break;
+            }
+            i++;
+        }
+        if (finded) {
+            ret << i;
+        } else {
+            ret << -1;
+        }
+    }
+    return ret;
+}
+
 /*!
  * \brief TreeModel::setFilter - установка фильтра
  * \param filter - фильтр
  */
-void TreeModel::setFilter(const QVariantMap &filter) {
-    for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
-        m_filter[it.key()] = *it;
-    }
-    reload();
-}
+// void TreeModel::setFilter(const QVariantMap &filter) {
+//     for (QVariantMap::ConstIterator it = filter.constBegin(); it != filter.constEnd(); ++it) {
+//         m_filter[it.key()] = *it;
+//     }
+//     reload();
+// }
 
 /*!
  * \brief TreeModel::removeFromFilter - удалить значение из фильтра
  * \param key ключ
  */
-void TreeModel::removeFromFilter(const QString &key) {
-    m_filter.remove(key);
-    reload();
-}
+// void TreeModel::removeFromFilter(const QString &key) {
+//     m_filter.remove(key);
+//     reload();
+// }
 
 void TreeModel::filterChanged(const QString &index, const QVariantMap &value) {
     /// TODO вставить обработку

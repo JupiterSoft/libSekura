@@ -123,7 +123,6 @@ Menu *Interface::createMenu(QMenuBar *mb, const RestSettings *settings, QObject 
 BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
                                 const RestSettings *settings, QWidget *parent) {
     BaseWidget *ret = nullptr;
-    // QVariantMap temp; // = map;
     QString str = desc["type"].toString();
     bool mf_created = false;
     if (mfilter == nullptr) {
@@ -131,14 +130,15 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
         mf_created = true;
     }
     if ((str == "Table") || (str == "Tree") || (str == "Item")) {
-        //        temp["model"] = desc["model"];
-
         /// установить настройки в фильтр
         mfilter->remove("temp");
         mfilter->setValue("temp", "model", desc["model"]);
         mfilter->setValue("temp", "caption", desc["caption"]);
         if (desc.contains("filter")) {
             mfilter->setValue("temp", "filter", desc["filter"]);
+        }
+        if (desc.contains("hidden")) {
+            mfilter->setValue("temp", "hidden", desc["hidden"]);
         }
 
         /// создать необходимый widget

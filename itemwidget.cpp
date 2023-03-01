@@ -36,7 +36,7 @@ ItemWidget::ItemWidget(ModelFilter *filter, const RestSettings *settings, QWidge
 
     // connect(m_model, &ItemModel::idChanged, this, &ItemWidget::idChanged);
 
-    this->setWindowTitle(filter->value("temp", "caption").toString());
+    this->setWindowTitle(m_modelFilter->value("temp", "caption").toString());
 }
 
 ItemWidget::~ItemWidget() {
@@ -60,6 +60,12 @@ ItemWidget::~ItemWidget() {
  */
 void ItemWidget::connectInterface(const QVariant &val) {
     QVariantList fields = val.toList();
+    QStringList hidden;
+    if (m_modelFilter->contains("temp", "hidden")) {
+        foreach (QVariant v, m_modelFilter->value("temp", "hidden").toList()) {
+            hidden << v.toString();
+        }
+    }
     foreach (QVariant v, fields) {
         QVariantMap m = v.toMap();
         QString id = m["name"].toString();
@@ -75,6 +81,9 @@ void ItemWidget::connectInterface(const QVariant &val) {
         if (ptr != nullptr) {
             ui->baseLayout->addWidget(ptr);
             m_model->setItem(id, ptr);
+            if (hidden.contains(id)) {
+                ptr->setHidden(true);
+            }
             LineEdit *le = qobject_cast<LineEdit *>(ptr);
             if (le != nullptr) {
                 connect(le, &LineEdit::valueChanged, this, [this, le](const QVariant &val) {

@@ -50,6 +50,14 @@ TreeWidget::TreeWidget(ModelFilter *filter, const RestSettings *settings, QWidge
             if (m != -1) {
                 QTimer::singleShot(100, this, [this, m]() {
                     ui->treeView->header()->setSectionResizeMode(m, QHeaderView::Stretch);
+                    if (m_modelFilter->contains("temp", "hidden")) {
+                        QList<int> v =
+                            m_model->headerIndex(m_modelFilter->value("temp", "hidden").toList());
+                        foreach (int m, v)
+                            if (m != -1) {
+                                ui->treeView->hideColumn(m);
+                            }
+                    }
                 });
             }
             if (m_model->buttonsContains("new")) {

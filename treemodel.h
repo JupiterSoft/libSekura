@@ -46,13 +46,14 @@ namespace Sekura {
 
         void changeIndex(const QString &table, const QString &id);
         const QString &model() const { return m_model; }
+        QList<int> headerIndex(const QVariantList &lst);
 
       signals:
         void initialized();
 
       public slots:
-        void setFilter(const QVariantMap &filter);
-        void removeFromFilter(const QString &key);
+        // void setFilter(const QVariantMap &filter);
+        // void removeFromFilter(const QString &key);
 
         void filterChanged(const QString &index, const QVariantMap &value);
 

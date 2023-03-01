@@ -277,6 +277,28 @@ void TableModel::changeIndex(const QString &table, const QString &id) {
     }
 }
 
+QList<int> TableModel::headerIndex(const QVariantList &lst) {
+    QList<int> ret;
+    foreach (QVariant v, lst) {
+        QString id = v.toString();
+        int i = 0;
+        bool finded = false;
+        foreach (QString mv, m_view_data) {
+            if (mv == id) {
+                finded = true;
+                break;
+            }
+            i++;
+        }
+        if (finded) {
+            ret << i;
+        } else {
+            ret << -1;
+        }
+    }
+    return ret;
+}
+
 /*!
  * \brief TableModel::setFilter - установка постоянного фильтра
  * \param filter - фильтр

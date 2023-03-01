@@ -58,6 +58,14 @@ TableWidget::TableWidget(ModelFilter *filter, const RestSettings *settings, QWid
                 QTimer::singleShot(100, this, [this, m]() {
                     ui->tableView->horizontalHeader()->setSectionResizeMode(m,
                                                                             QHeaderView::Stretch);
+                    if (m_modelFilter->contains("temp", "hidden")) {
+                        QList<int> v =
+                            m_model->headerIndex(m_modelFilter->value("temp", "hidden").toList());
+                        foreach (int m, v)
+                            if (m != -1) {
+                                ui->tableView->setColumnHidden(m, true);
+                            }
+                    }
                 });
             }
             if (m_model->buttonsContains("new")) {
