@@ -174,8 +174,7 @@ class TreeModel::TreeItem {
  * \param parent - родительский объект
  */
 
-TreeModel::TreeModel(ModelFilter *filter, const RestSettings *settings, QObject *parent)
-    : QAbstractItemModel{parent} {
+TreeModel::TreeModel(ModelFilter *filter, QObject *parent) : QAbstractItemModel{parent} {
     m_root = nullptr;
     m_modelFilter = filter;
     m_model = m_modelFilter->value("temp", "model").toString();
@@ -184,7 +183,7 @@ TreeModel::TreeModel(ModelFilter *filter, const RestSettings *settings, QObject 
         m_only_my = true;
     connect(m_modelFilter, &ModelFilter::itemChanged, this, &TreeModel::filterChanged);
     /// TODO вместо строки использовать VariantMap передать параметр только мои
-    m_client = new RestClient(settings, this);
+    m_client = new RestClient(Interface::settings(), this);
     connect(m_client, &RestClient::success, this, &TreeModel::success);
     connect(m_client, &RestClient::error, this, &TreeModel::error);
     m_initialized = false;

@@ -18,8 +18,7 @@ namespace Sekura {
     class ItemModel : public QObject {
         Q_OBJECT
       public:
-        explicit ItemModel(ModelFilter *filter, const RestSettings *settings,
-                           QObject *parent = nullptr);
+        explicit ItemModel(ModelFilter *filter, QObject *parent = nullptr);
         ~ItemModel();
 
         void save();

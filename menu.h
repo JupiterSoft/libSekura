@@ -20,7 +20,7 @@ namespace Sekura {
     class Menu : public QObject {
         Q_OBJECT
       public:
-        explicit Menu(QMenuBar *mb, const RestSettings *settings, QObject *parent = nullptr);
+        explicit Menu(QMenuBar *mb, QObject *parent = nullptr);
 
       signals:
         void childCreated(Sekura::BaseWidget *);
@@ -37,7 +37,6 @@ namespace Sekura {
         QMenuBar *m_menuBar;
         TreeModel *m_menu;
         QMap<QAction *, QString> m_actions;
-        const RestSettings *m_settings;
     };
 
 } // namespace Sekura

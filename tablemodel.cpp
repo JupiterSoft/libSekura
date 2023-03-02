@@ -6,7 +6,6 @@
 #include "tablemodel.h"
 #include "modelfilter.h"
 #include "restclient.h"
-#include "restsettings.h"
 
 using namespace Sekura;
 
@@ -16,8 +15,7 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родительский объект
  */
-TableModel::TableModel(ModelFilter *filter, const RestSettings *settings, QObject *parent)
-    : QAbstractTableModel{parent} {
+TableModel::TableModel(ModelFilter *filter, QObject *parent) : QAbstractTableModel{parent} {
     m_modelFilter = filter;
     m_model = m_modelFilter->value("temp", "model").toString();
     // m_model = data["model"].toString();
@@ -49,7 +47,7 @@ TableModel::TableModel(ModelFilter *filter, const RestSettings *settings, QObjec
     /// save data
     // m_modelFilter = filter;
     connect(m_modelFilter, &ModelFilter::itemChanged, this, &TableModel::filterChanged);
-    m_client = new RestClient(settings, this);
+    m_client = new RestClient(Interface::settings(), this);
     connect(m_client, &RestClient::success, this, &TableModel::success);
     connect(m_client, &RestClient::error, this, &TableModel::error);
     m_viewCode = false;

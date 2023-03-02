@@ -24,8 +24,7 @@ namespace Sekura {
         Q_OBJECT
 
       public:
-        explicit ItemWidget(ModelFilter *filter, const RestSettings *settings,
-                            QWidget *parent = nullptr);
+        explicit ItemWidget(ModelFilter *filter, QWidget *parent = nullptr);
         ~ItemWidget();
 
       public slots:
@@ -45,7 +44,6 @@ namespace Sekura {
       private:
         Ui::ItemWidget *ui;
         ItemModel *m_model;
-        const RestSettings *m_settings;
     };
 
 } // namespace Sekura

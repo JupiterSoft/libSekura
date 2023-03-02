@@ -18,8 +18,7 @@ namespace Sekura {
     class TreeModel : public QAbstractItemModel {
         Q_OBJECT
       public:
-        explicit TreeModel(ModelFilter *filter, const RestSettings *settings,
-                           QObject *parent = nullptr);
+        explicit TreeModel(ModelFilter *filter, QObject *parent = nullptr);
         ~TreeModel();
 
         QVariant data(const QModelIndex &index, int role) const override;

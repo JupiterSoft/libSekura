@@ -6,6 +6,7 @@
 #include "lineedit.h"
 #include "sekura.h"
 #include "ui_lineedit.h"
+#include "wizarditemwidget.h"
 
 #include <QCryptographicHash>
 
@@ -39,6 +40,16 @@ LineEdit::LineEdit(int type, QWidget *parent) : BaseItem(type, parent), ui(new U
     case 3:
         // ...
         connect(ui->pushButton, &QPushButton::clicked, this, [=]() { emit valueChanged(m_table); });
+        break;
+    case 10001:
+        // ... - edit form
+        connect(ui->pushButton, &QPushButton::clicked, this, [=]() {
+            WizardItemWidget *w = new WizardItemWidget(ui->lineEdit->text());
+            if (w->exec() == QDialog::Accepted) {
+                ui->lineEdit->setText(w->form());
+            }
+            delete w;
+        });
         break;
     }
 }

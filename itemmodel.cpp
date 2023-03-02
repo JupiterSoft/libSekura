@@ -16,11 +16,10 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родитель
  */
-ItemModel::ItemModel(ModelFilter *filter, const RestSettings *settings, QObject *parent)
-    : QObject{parent} {
+ItemModel::ItemModel(ModelFilter *filter, QObject *parent) : QObject{parent} {
     m_modelFilter = filter;
     m_model = m_modelFilter->value("temp", "model").toString();
-    m_client = new RestClient(settings, this);
+    m_client = new RestClient(Interface::settings(), this);
     connect(m_client, &RestClient::success, this, &ItemModel::success);
     connect(m_client, &RestClient::error, this, &ItemModel::error);
     QVariantMap req;

@@ -25,10 +25,10 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родительская форма
  */
-ItemWidget::ItemWidget(ModelFilter *filter, const RestSettings *settings, QWidget *parent)
-    : BaseWidget(filter, parent), ui(new Ui::ItemWidget), m_settings(settings) {
+ItemWidget::ItemWidget(ModelFilter *filter, QWidget *parent)
+    : BaseWidget(filter, parent), ui(new Ui::ItemWidget) {
     ui->setupUi(this);
-    m_model = new ItemModel(filter, settings, this);
+    m_model = new ItemModel(filter, this);
 
     connect(m_model, &ItemModel::connectInterface, this, &ItemWidget::connectInterface);
     connect(m_model, &ItemModel::setEnabled, this, &ItemWidget::setEnabled);
@@ -96,7 +96,7 @@ void ItemWidget::connectInterface(const QVariant &val) {
                     QVBoxLayout *layout = new QVBoxLayout(dialog);
                     layout->setSpacing(0);
                     layout->setContentsMargins(5, 5, 5, 5);
-                    TableWidget *widget = new TableWidget(m_modelFilter, m_settings, dialog);
+                    TableWidget *widget = new TableWidget(m_modelFilter, dialog);
                     connect(widget, &TableWidget::selectedValues, le, &LineEdit::selectedValues);
                     layout->addWidget(widget);
                     dialog->exec();

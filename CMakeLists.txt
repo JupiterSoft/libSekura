@@ -99,6 +99,10 @@ add_library(
   modelfilter.h
   modelfilter.cpp
   ModelFilter
+  wizarditemwidget.h
+  wizarditemwidget.cpp
+  wizarditemwidget.ui
+  WizardItemWidget
   resources.qrc)
 
 target_link_libraries(

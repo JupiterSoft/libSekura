@@ -18,10 +18,10 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родительскйи объект
  */
-TreeWidget::TreeWidget(ModelFilter *filter, const RestSettings *settings, QWidget *parent)
-    : BaseWidget(filter, parent), ui(new Ui::TreeWidget), m_settings(settings) {
+TreeWidget::TreeWidget(ModelFilter *filter, QWidget *parent)
+    : BaseWidget(filter, parent), ui(new Ui::TreeWidget) {
     ui->setupUi(this);
-    m_model = new TreeModel(filter, settings, this);
+    m_model = new TreeModel(filter, this);
     ui->treeView->setModel(m_model);
     this->setWindowTitle(filter->value("temp", "caption").toString());
     if (m_model->isInitialized()) {
@@ -117,14 +117,14 @@ void TreeWidget::openOnEdit(const QModelIndex &index) {
         qDebug() << code;
         ModelFilter *mf = new ModelFilter(m_modelFilter);
         mf->setValue("temp", "model", m_model->model());
-        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), m_settings, this);
+        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), this);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
         emit appendWidget(item);
     } else {
         ModelFilter *mf = new ModelFilter(m_modelFilter);
         mf->setValue("temp", "model", m_model->model());
         mf->setValue(m_model->model(), "isNew", true);
-        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), m_settings, this);
+        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), this);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
         QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
         if (dialog == nullptr)

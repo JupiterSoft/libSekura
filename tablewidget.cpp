@@ -18,8 +18,8 @@ using namespace Sekura;
  * \param settings - настройки подключения
  * \param parent - родительский объект
  */
-TableWidget::TableWidget(ModelFilter *filter, const RestSettings *settings, QWidget *parent)
-    : BaseWidget(filter, parent), ui(new Ui::TableWidget), m_settings(settings) {
+TableWidget::TableWidget(ModelFilter *filter, QWidget *parent)
+    : BaseWidget(filter, parent), ui(new Ui::TableWidget) {
     ui->setupUi(this);
     m_mode = 0; ///< Просмотр в таблице
     if (m_modelFilter->contains("temp", "select")) {
@@ -28,7 +28,7 @@ TableWidget::TableWidget(ModelFilter *filter, const RestSettings *settings, QWid
     } else {
         ui->gbBottom->setVisible(false);
     }
-    m_model = new TableModel(m_modelFilter, settings, this);
+    m_model = new TableModel(m_modelFilter, this);
     ui->tableView->setModel(m_model);
     this->setWindowTitle(m_modelFilter->value("temp", "caption").toString());
     if (m_model->isInitialized()) {
@@ -168,7 +168,7 @@ void TableWidget::openToEdit(const QModelIndex &index) {
         qDebug() << code;
         ModelFilter *mf = new ModelFilter(m_modelFilter);
         mf->setValue("temp", "model", m_model->model());
-        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), m_settings, this);
+        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), this);
         item->setMainForm(true);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
         emit appendWidget(item);
@@ -176,7 +176,7 @@ void TableWidget::openToEdit(const QModelIndex &index) {
         ModelFilter *mf = new ModelFilter(m_modelFilter);
         mf->setValue("temp", "model", m_model->model());
         mf->setValue(m_model->model(), "isNew", true);
-        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), m_settings, this);
+        BaseWidget *item = Interface::createWidget(mf, m_model->formEdit(), this);
         connect(item, &BaseWidget::parentReload, this, [=]() { m_model->reload(); });
         QDialog *dialog = qobject_cast<QDialog *>(parentWidget());
         if (dialog == nullptr)

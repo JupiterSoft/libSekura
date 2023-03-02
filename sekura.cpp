@@ -29,6 +29,8 @@
 
 using namespace Sekura;
 
+RestSettings *Interface::m_settings = nullptr;
+
 /*!
  * \brief Sekura::Interface::genUFID - генерирует новую метку
  * \return метка
@@ -106,10 +108,10 @@ BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
  * \param parent - родитеь
  * \return - новое меню
  */
-Menu *Interface::createMenu(QMenuBar *mb, const RestSettings *settings, QObject *parent) {
+Menu *Interface::createMenu(QMenuBar *mb, QObject *parent) {
     static Menu *menu = nullptr;
     if (menu == nullptr)
-        menu = new Menu(mb, settings, parent);
+        menu = new Menu(mb, parent);
     return menu;
 }
 
@@ -122,8 +124,7 @@ Menu *Interface::createMenu(QMenuBar *mb, const RestSettings *settings, QObject 
  * \param parent - родитель
  * \return созданный элемент управления
  */
-BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
-                                const RestSettings *settings, QWidget *parent) {
+BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc, QWidget *parent) {
     BaseWidget *ret = nullptr;
     QString str = desc["type"].toString();
     bool mf_created = false;
@@ -145,12 +146,12 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
 
         /// создать необходимый widget
         if (str == "Table") {
-            ret = new TableWidget(mfilter, settings, parent);
+            ret = new TableWidget(mfilter, parent);
         } else if (str == "Tree") {
-            ret = new TreeWidget(mfilter, settings, parent);
+            ret = new TreeWidget(mfilter, parent);
         } else if (str == "Item") {
             /// не фильтруется
-            ret = new ItemWidget(mfilter, settings, parent);
+            ret = new ItemWidget(mfilter, parent);
         }
         if (ret != nullptr) {
             if (desc.contains("main"))
@@ -175,7 +176,7 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
             }
             foreach (QVariant v, desc["childs"].toList()) {
                 QVariantMap m = v.toMap();
-                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                BaseWidget *w = privateParseWidgets(mfilter, m, parent);
                 if (w != nullptr) {
                     layout->addWidget(w);
                     QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
@@ -201,7 +202,7 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
             }
             foreach (QVariant v, desc["childs"].toList()) {
                 QVariantMap m = v.toMap();
-                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                BaseWidget *w = privateParseWidgets(mfilter, m, parent);
                 if (w != nullptr) {
                     layout->addWidget(w);
                     QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
@@ -231,7 +232,7 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
             scroll->setWidgetResizable(true);
             foreach (QVariant v, desc["childs"].toList()) {
                 QVariantMap m = v.toMap();
-                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                BaseWidget *w = privateParseWidgets(mfilter, m, parent);
                 if (w != nullptr) {
                     scroll->setWidget(w);
                     QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
@@ -251,7 +252,7 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
             layout->addWidget(tab);
             foreach (QVariant v, desc["childs"].toList()) {
                 QVariantMap m = v.toMap();
-                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                BaseWidget *w = privateParseWidgets(mfilter, m, parent);
                 if (w != nullptr) {
                     tab->addTab(w, m["caption"].toString());
                     QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
@@ -268,7 +269,7 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
             layout->addWidget(tool);
             foreach (QVariant v, desc["childs"].toList()) {
                 QVariantMap m = v.toMap();
-                BaseWidget *w = privateParseWidgets(mfilter, m, settings, parent);
+                BaseWidget *w = privateParseWidgets(mfilter, m, parent);
                 if (w != nullptr) {
                     tool->addItem(w, m["caption"].toString());
                     QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
@@ -297,14 +298,20 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc,
  * \param parent - родительская форма
  * \return новая форма
  */
-BaseWidget *Interface::createWidget(ModelFilter *ref, const QString &desc,
-                                    const RestSettings *settings, QWidget *parent) {
+BaseWidget *Interface::createWidget(ModelFilter *ref, const QString &desc, QWidget *parent) {
     QVariantMap vals = QJsonDocument::fromJson(desc.toUtf8()).object().toVariantMap();
-    BaseWidget *ptr = privateParseWidgets(ref, vals, settings, parent);
+    BaseWidget *ptr = privateParseWidgets(ref, vals, parent);
     if (ptr != nullptr)
         ptr->setMainForm(true);
 
     return ptr;
+}
+
+void Interface::setSettings(RestSettings *settings) { m_settings = settings; }
+
+RestSettings *Interface::settings() {
+    Q_ASSERT(m_settings);
+    return m_settings;
 }
 
 void sekura_init_resources() { Q_INIT_RESOURCE(resources); }

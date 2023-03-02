@@ -38,9 +38,15 @@ namespace Sekura {
         static QString genUFID();
         static QString genKey();
         static BaseItem *createItem(const QVariantMap &element, QWidget *parent);
-        static Menu *createMenu(QMenuBar *mb, const RestSettings *settings, QObject *parent);
+        static Menu *createMenu(QMenuBar *mb, QObject *parent);
         static BaseWidget *createWidget(ModelFilter *filter, const QString &desc,
-                                        const RestSettings *settings, QWidget *parent = nullptr);
+                                        QWidget *parent = nullptr);
+
+        static void setSettings(RestSettings *settings);
+        static RestSettings *settings();
+
+      private:
+        static RestSettings *m_settings;
     };
 
 }; // namespace Sekura

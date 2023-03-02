@@ -14,12 +14,11 @@ using namespace Sekura;
  * \param settings - установки соединения
  * \param parent - родительский объект
  */
-Menu::Menu(QMenuBar *mb, const RestSettings *settings, QObject *parent)
-    : QObject{parent}, m_menuBar(mb), m_settings(settings) {
+Menu::Menu(QMenuBar *mb, QObject *parent) : QObject{parent}, m_menuBar(mb) {
     ModelFilter *filter = new ModelFilter(this);
     filter->setValue("temp", "model", "a_menus");
     filter->setValue("temp", "onlyMy", true);
-    m_menu = new TreeModel(filter, settings, this);
+    m_menu = new TreeModel(filter, this);
     connect(m_menu, &TreeModel::layoutChanged, this, &Menu::startCreateMenu);
 }
 
@@ -46,7 +45,7 @@ void Menu::triggered() {
     QAction *action = qobject_cast<QAction *>(sender());
     if (m_actions.contains(action)) {
         QString val = m_actions[action];
-        BaseWidget *widget = Interface::createWidget(nullptr, val, m_settings);
+        BaseWidget *widget = Interface::createWidget(nullptr, val);
         widget->setWindowTitle(action->text());
         if (widget != nullptr) {
             emit childCreated(widget);
