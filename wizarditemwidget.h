@@ -30,20 +30,39 @@ namespace Sekura {
       protected slots:
         void pbSave_clicked();
         void pbAdd_clicked();
-        void pbAddChild_clicked();
-        void pbMove_clicked();
         void pbDel_clicked();
         void cmbItem_currentChanged(int a);
         void cmbModel_currentChanged(int a);
 
-        void tree_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+        void tree_itemSelectionChanged();
         void tw_itemChanged(QTableWidgetItem *item);
+
+        void success(const QJsonObject &obj);
+        void error(const QJsonObject &obj);
+
+      protected:
+        void parseJson();
+        void toJson();
+
+        void parse(const QVariantMap &map, QTreeWidgetItem *parent);
+        void saveItem(QTreeWidgetItem *item);
+        void fillItem(QTreeWidgetItem *item);
+
+        QVariantMap mapItem(QTreeWidgetItem *item);
+        void removeFromItem(QTreeWidgetItem *item);
 
       private:
         Ui::WizardItemWidget *ui;
+        QStringList m_tables;
+        QStringList m_idTables;
+        QMap<QString, QStringList> m_fields;
+        QMap<QString, QStringList> m_idFields;
+        QMap<QTreeWidgetItem *, QVariantMap> m_items;
 
         QString m_form;
+        QVariantMap m_data;
         RestClient *m_client;
+        QTreeWidgetItem *m_currentItem;
     };
 
 } // namespace Sekura

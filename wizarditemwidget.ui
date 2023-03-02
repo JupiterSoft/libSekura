@@ -52,22 +52,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pbAddChild">
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/043-download.png</normaloff>:/images/043-download.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pbMove">
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/086-share-2.png</normaloff>:/images/086-share-2.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="pbDel">
            <property name="text">
             <string/>
@@ -78,10 +62,26 @@
            </property>
           </widget>
          </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
        <item>
         <widget class="QTreeWidget" name="tree">
+         <property name="dragDropMode">
+          <enum>QAbstractItemView::InternalMove</enum>
+         </property>
          <column>
           <property name="text">
            <string>Type</string>
@@ -92,27 +92,14 @@
            <string>Model</string>
           </property>
          </column>
-         <item>
-          <property name="text">
-           <string>Box</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <item>
-           <property name="text">
-            <string>Item</string>
-           </property>
-           <property name="text">
-            <string>a_applications</string>
-           </property>
-          </item>
-         </item>
         </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QGroupBox" name="gb">
+      <property name="title">
+       <string/>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -145,6 +132,11 @@
            </item>
            <item>
             <property name="text">
+             <string>TableEdit</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>Box</string>
             </property>
            </item>
@@ -168,6 +160,28 @@
              <string>Tool</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>Spacer</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GroupBox</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Command</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cbMainForm">
+           <property name="text">
+            <string>Main form</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -182,6 +196,16 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>ID:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="leID"/>
+             </item>
+             <item>
               <widget class="QLabel" name="lModel">
                <property name="text">
                 <string>Model:</string>
@@ -192,7 +216,14 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="cmbModel"/>
+              <widget class="QComboBox" name="cmbModel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -284,6 +315,7 @@
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="commands"/>
         </widget>
        </item>
       </layout>
@@ -330,11 +362,11 @@
  <tabstops>
   <tabstop>leCaption</tabstop>
   <tabstop>pbAdd</tabstop>
-  <tabstop>pbAddChild</tabstop>
-  <tabstop>pbMove</tabstop>
   <tabstop>pbDel</tabstop>
   <tabstop>tree</tabstop>
   <tabstop>cmbItem</tabstop>
+  <tabstop>cbMainForm</tabstop>
+  <tabstop>leID</tabstop>
   <tabstop>cmbModel</tabstop>
   <tabstop>tw</tabstop>
   <tabstop>rbH</tabstop>

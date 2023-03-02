@@ -17,10 +17,12 @@
 
 #include <QCryptographicHash>
 #include <QDateTime>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QScrollArea>
+#include <QSpacerItem>
 #include <QSplitter>
 #include <QTabWidget>
 #include <QTimer>
@@ -275,6 +277,44 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc, Q
                     QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
                     QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
                     QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
+                }
+            }
+        } else if (str == "Spacer") {
+            QLayout *layout;
+            layout = new QHBoxLayout(ret);
+            layout->setSpacing(0);
+            layout->setContentsMargins(5, 5, 5, 5);
+
+            QSpacerItem *tool;
+            QString direction = desc["direction"].toString();
+            if (direction == "H") {
+                tool = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Minimum);
+            } else {
+                tool = new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding);
+            }
+
+            layout->addItem(tool);
+        } else if (str == "GroupBox") {
+            QString caption = desc["caption"].toString();
+            QGroupBox *box = new QGroupBox(ret);
+            QLayout *layout = new QHBoxLayout(ret);
+            layout->setSpacing(0);
+            layout->setContentsMargins(5, 5, 5, 5);
+            layout->addWidget(box);
+            box->setTitle(caption);
+            layout = new QHBoxLayout(box);
+            layout->setSpacing(0);
+            layout->setContentsMargins(5, 5, 5, 5);
+            foreach (QVariant v, desc["childs"].toList()) {
+                QVariantMap m = v.toMap();
+                BaseWidget *w = privateParseWidgets(mfilter, m, parent);
+                if (w != nullptr) {
+                    layout->addWidget(w);
+                    QObject::connect(w, &BaseWidget::closeParent, ret, &BaseWidget::closeParent);
+                    QObject::connect(w, &BaseWidget::appendWidget, ret, &BaseWidget::appendWidget);
+                    QObject::connect(w, &BaseWidget::parentReload, ret, &BaseWidget::parentReload);
+                    // QObject::connect(ret, &BaseWidget::idChanged, w, &BaseWidget::changeId);
+                    // QObject::connect(w, &BaseWidget::idChanged, ret, &BaseWidget::idChanged);
                 }
             }
         }
