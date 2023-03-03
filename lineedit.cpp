@@ -41,7 +41,7 @@ LineEdit::LineEdit(int type, QWidget *parent) : BaseItem(type, parent), ui(new U
         // ...
         connect(ui->pushButton, &QPushButton::clicked, this, [=]() { emit valueChanged(m_table); });
         break;
-    case 10001:
+    case 4:
         // ... - edit form
         connect(ui->pushButton, &QPushButton::clicked, this, [=]() {
             WizardItemWidget *w = new WizardItemWidget(ui->lineEdit->text());

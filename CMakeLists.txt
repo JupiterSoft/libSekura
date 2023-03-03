@@ -111,6 +111,13 @@ add_library(
   foreignkey.cpp
   foreignkey.ui
   ForeignKey
+  element.h
+  element.cpp
+  element.ui
+  Element
+  qaesencryption.h
+  qaesencryption.cpp
+  QAESEncryption
   resources.qrc)
 
 target_link_libraries(

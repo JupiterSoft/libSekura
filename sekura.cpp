@@ -8,6 +8,7 @@
 #include "combobox.h"
 #include "datatype.h"
 #include "datetimeedit.h"
+#include "element.h"
 #include "foreignkey.h"
 #include "itemwidget.h"
 #include "lineedit.h"
@@ -112,6 +113,8 @@ BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
             t = 0;
         ForeignKey *le = new ForeignKey(t, parent); ///<<вставить инициализацию
         ptr = le;
+    } else if (type.left(7) == "Element") {
+        ptr = new Element(0, parent);
     }
     return ptr;
 }
