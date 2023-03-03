@@ -6,7 +6,9 @@
 #include "sekura.h"
 #include "checkbox.h"
 #include "combobox.h"
+#include "datatype.h"
 #include "datetimeedit.h"
+#include "foreignkey.h"
 #include "itemwidget.h"
 #include "lineedit.h"
 #include "menu.h"
@@ -99,6 +101,17 @@ BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
             max = 0;
         sb->setMinMax(min, max);
         ptr = sb;
+    } else if (type.left(8) == "DataType") {
+        ptr = new DataType(0, parent);
+    } else if (type.left(10) == "ForeignKey") {
+        int t = 0;
+        QString str = type.split(";")[0].remove("ForeignKey").remove("(").remove(")");
+        bool ok;
+        t = str.toInt(&ok);
+        if (!ok)
+            t = 0;
+        ForeignKey *le = new ForeignKey(t, parent); ///<<вставить инициализацию
+        ptr = le;
     }
     return ptr;
 }

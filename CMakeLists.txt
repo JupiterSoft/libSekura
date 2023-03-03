@@ -103,6 +103,14 @@ add_library(
   wizarditemwidget.cpp
   wizarditemwidget.ui
   WizardItemWidget
+  datatype.h
+  datatype.cpp
+  datatype.ui
+  DataType
+  foreignkey.h
+  foreignkey.cpp
+  foreignkey.ui
+  ForeignKey
   resources.qrc)
 
 target_link_libraries(
