@@ -37,6 +37,7 @@ ItemWidget::ItemWidget(ModelFilter *filter, QWidget *parent)
     // connect(m_model, &ItemModel::idChanged, this, &ItemWidget::idChanged);
 
     this->setWindowTitle(m_modelFilter->value("temp", "caption").toString());
+    // connect(m_model, &ItemModel::initialized, this, &ItemWidget::filled);
 }
 
 ItemWidget::~ItemWidget() {
@@ -76,7 +77,7 @@ void ItemWidget::connectInterface(const QVariant &val) {
             ptr->setViewValue(
                 m_model->modelFilter()->value(m["fk_table"].toString(), m["fk_view"].toString()));
             /// TODO set read only item!!!
-            ptr->setReadOnly();
+            // ptr->setReadOnly();
         }
         if (ptr != nullptr) {
             ui->baseLayout->addWidget(ptr);

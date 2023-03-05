@@ -69,6 +69,12 @@ void Element::setValue(const QVariant &val) {
         ui->comboBox2->setCurrentIndex(t);
     } else if (type == "Element") {
         ui->comboBox->setCurrentIndex(7);
+    } else if (type == "Text") {
+        ui->comboBox->setCurrentIndex(8);
+    } else {
+        ui->comboBox->setCurrentIndex(0);
+        cmb_indexChanged(0);
+        ui->comboBox2->setCurrentIndex(0);
     }
 }
 
@@ -86,6 +92,7 @@ QVariant Element::value() const {
     case 3: ///< CheckBox
     case 5: ///< DataType
     case 7: ///< Element
+    case 8: ///< Text
         break;
     case 4:
         str += QString("(0,%1,%2)").arg(ui->spinBox1->value()).arg(ui->spinBox2->value());
@@ -123,6 +130,7 @@ void Element::cmb_indexChanged(int a) {
     case 3: ///< CheckBox
     case 5: ///< DataType
     case 7: ///< Element
+    case 8: ///< Text
         ui->label1->setHidden(true);
         ui->spinBox1->setHidden(true);
         ui->comboBox2->setHidden(true);

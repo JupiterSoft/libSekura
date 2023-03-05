@@ -28,6 +28,8 @@ namespace Sekura {
         m_modelFilter->addRef();
     }
 
+    // void BaseWidget::filled() { resize(800, 600); }
+
     //    void BaseWidget::changeId(const QString &table, const QString &id) {
     //        Q_UNUSED(table)
     //        Q_UNUSED(id)

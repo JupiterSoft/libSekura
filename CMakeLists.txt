@@ -8,9 +8,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Network Core5Compat)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Network Core5Compat Gui)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network
-                                                       Core5Compat)
+                                                       Core5Compat Gui)
 
 if(APPLE)
   set(OPENSSL_ROOT_DIR "/opt/homebrew/opt/openssl")
@@ -118,11 +118,22 @@ add_library(
   qaesencryption.h
   qaesencryption.cpp
   QAESEncryption
+  listmodel.h
+  listmodel.cpp
+  ListModel
+  listwidget.h
+  listwidget.cpp
+  listwidget.ui
+  ListWidget
+  text.h
+  text.cpp
+  text.ui
+  Text
   resources.qrc)
 
 target_link_libraries(
   libSekura
   PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network
-          Qt${QT_VERSION_MAJOR}::Core5Compat ${OPENSSL_LIBRARIES})
+          Qt${QT_VERSION_MAJOR}::Core5Compat Qt${QT_VERSION_MAJOR}::Gui ${OPENSSL_LIBRARIES})
 
 target_compile_definitions(libSekura PRIVATE LIBSEKURA_LIBRARY)

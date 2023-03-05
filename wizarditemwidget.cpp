@@ -44,6 +44,7 @@ WizardItemWidget::WizardItemWidget(const QString &form, QWidget *parent)
 
     m_currentItem = nullptr;
     ui->gb->setEnabled(false);
+    m_currentItem = nullptr;
 }
 
 WizardItemWidget::~WizardItemWidget() { delete ui; }
@@ -58,18 +59,26 @@ void WizardItemWidget::pbSave_clicked() {
 
 void WizardItemWidget::pbAdd_clicked() {
 
-    QTreeWidgetItem *item;
-    if (m_currentItem != nullptr)
-        item = new QTreeWidgetItem(m_currentItem, QStringList() << "Box"
-                                                                << "");
-    else
+    QTreeWidgetItem *item = nullptr;
+    if (m_currentItem != nullptr) {
+        const QVariantMap &mp = m_items[m_currentItem];
+        QString type = mp["type"].toString();
+        if ((type == "Box") || (type == "Splitter") || (type == "Scroll") || (type == "Tab") ||
+            (type == "Tool") || (type == "Spacer") || (type == "GroupBox")) {
+            item = new QTreeWidgetItem(m_currentItem, QStringList() << "Box"
+                                                                    << "");
+        }
+    } else {
         item = new QTreeWidgetItem(ui->tree, QStringList() << "Box"
                                                            << "");
-    item->setFlags(item->flags() | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
-    QVariantMap map;
-    map["type"] = "Box";
-    map["direction"] = "H";
-    m_items[item] = map;
+    }
+    if (item != nullptr) {
+        item->setFlags(item->flags() | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+        QVariantMap map;
+        map["type"] = "Box";
+        map["direction"] = "H";
+        m_items[item] = map;
+    }
 }
 
 void WizardItemWidget::pbDel_clicked() {
@@ -82,29 +91,42 @@ void WizardItemWidget::pbDel_clicked() {
 }
 
 void WizardItemWidget::cmbItem_currentChanged(int a) {
+    if (m_currentItem == nullptr)
+        return;
     switch (a) {
     case 0: ///< Item
     case 1: ///< Table
     case 2: ///< Tree
-    case 3: ///< TableEdit
+    case 3: ///< List
+    case 4: ///< TableEdit
         ui->sw->setCurrentIndex(0);
         break;
-    case 4:  ///< Box
-    case 5:  ///< Splitter
-    case 6:  ///< Scroll
-    case 7:  ///< Tab
-    case 8:  ///< Tool
-    case 9:  ///< Spacer
-    case 10: ///< GroupBox
+    case 5:  ///< Box
+    case 6:  ///< Splitter
+    case 7:  ///< Scroll
+    case 8:  ///< Tab
+    case 9:  ///< Tool
+    case 10: ///< Spacer
+    case 11: ///< GroupBox
         ui->sw->setCurrentIndex(1);
         break;
-    case 11: ///< Command
+    case 12: ///< Command
         ui->sw->setCurrentIndex(2);
         break;
+    case 13: ///< CustomModel
+        ui->sw->setCurrentIndex(3);
+        break;
+    case 14: ///< Element
+        ui->sw->setCurrentIndex(4);
+        break;
     }
+    m_currentItem->setText(0, ui->cmbItem->currentText());
 }
 
 void WizardItemWidget::cmbModel_currentChanged(int a) {
+    if (m_currentItem == nullptr)
+        return;
+    m_currentItem->setText(1, ui->cmbModel->currentText());
     ui->tw->setRowCount(0);
     if (m_currentItem == nullptr)
         return;
@@ -248,7 +270,7 @@ void WizardItemWidget::toJson() {
 void WizardItemWidget::parse(const QVariantMap &map, QTreeWidgetItem *parent) {
     QVariantMap m;
     for (QVariantMap::ConstIterator it = map.constBegin(); it != map.constEnd(); ++it) {
-        if ((it.key() == "caption") || (it.key() == "childs")) {
+        if (it.key() == "childs") {
             continue;
         }
         m[it.key()] = *it;
@@ -280,6 +302,8 @@ void WizardItemWidget::saveItem(QTreeWidgetItem *item) {
         QVariantMap map;
         QString type = ui->cmbItem->currentText();
         map["type"] = type;
+        if (!ui->leCaption->text().isEmpty())
+            map["caption"] = ui->leCaption->text();
         QStringList lst;
         lst << type;
         if (ui->sw->currentIndex() == 0) {
@@ -312,6 +336,7 @@ void WizardItemWidget::saveItem(QTreeWidgetItem *item) {
             if (!ui->leID->text().isEmpty())
                 map["id"] = ui->leID->text();
         } else if (ui->sw->currentIndex() == 1) {
+            /// Layouts
             if (ui->rbH->isChecked())
                 map["direction"] = "H";
             else if (ui->rbV->isChecked())
@@ -320,6 +345,14 @@ void WizardItemWidget::saveItem(QTreeWidgetItem *item) {
                 map["direction"] = "HV";
             lst << "";
         } else if (ui->sw->currentIndex() == 2) {
+            /// Command
+            lst << "";
+        } else if (ui->sw->currentIndex() == 3) {
+            /// Custom Model
+            lst << "";
+        } else if (ui->sw->currentIndex() == 4) {
+            /// Element of custom model
+            lst << "";
         }
         m_items[item] = map;
         item->setText(0, lst[0]);
@@ -334,30 +367,41 @@ void WizardItemWidget::fillItem(QTreeWidgetItem *item) {
         ui->gb->setEnabled(true);
         QVariantMap m = m_items[item];
         QString type = m["type"].toString();
+        if (m.contains("caption"))
+            ui->leCaption->setText(m["caption"].toString());
+        else
+            ui->leCaption->setText("");
+
         if (type == "Item")
             ui->cmbItem->setCurrentIndex(0);
         else if (type == "Table")
             ui->cmbItem->setCurrentIndex(1);
         else if (type == "Tree")
             ui->cmbItem->setCurrentIndex(2);
-        else if (type == "TableEdit")
+        else if (type == "List")
             ui->cmbItem->setCurrentIndex(3);
-        else if (type == "Box")
+        else if (type == "TableEdit")
             ui->cmbItem->setCurrentIndex(4);
-        else if (type == "Splitter")
+        else if (type == "Box")
             ui->cmbItem->setCurrentIndex(5);
-        else if (type == "Scroll")
+        else if (type == "Splitter")
             ui->cmbItem->setCurrentIndex(6);
-        else if (type == "Tab")
+        else if (type == "Scroll")
             ui->cmbItem->setCurrentIndex(7);
-        else if (type == "Tool")
+        else if (type == "Tab")
             ui->cmbItem->setCurrentIndex(8);
-        else if (type == "Spacer")
+        else if (type == "Tool")
             ui->cmbItem->setCurrentIndex(9);
-        else if (type == "GroupBox")
+        else if (type == "Spacer")
             ui->cmbItem->setCurrentIndex(10);
-        else if (type == "Command")
+        else if (type == "GroupBox")
             ui->cmbItem->setCurrentIndex(11);
+        else if (type == "Command")
+            ui->cmbItem->setCurrentIndex(12);
+        else if (type == "CustomModel")
+            ui->cmbItem->setCurrentIndex(13);
+        else if (type == "Element")
+            ui->cmbItem->setCurrentIndex(14);
 
         if (m.contains("model")) {
             QString model = m["model"].toString();

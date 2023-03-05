@@ -15,20 +15,6 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <widget class="QLabel" name="lCaption">
-       <property name="text">
-        <string>Caption:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="leCaption"/>
-     </item>
-    </layout>
-   </item>
-   <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -132,6 +118,11 @@
            </item>
            <item>
             <property name="text">
+             <string>List</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>TableEdit</string>
             </property>
            </item>
@@ -175,6 +166,16 @@
              <string>Command</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>CustomModel</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Element</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item>
@@ -187,6 +188,30 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>ID:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="leID"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="lCaption">
+           <property name="text">
+            <string>Caption:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="leCaption"/>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QStackedWidget" name="sw">
          <property name="currentIndex">
           <number>0</number>
@@ -195,16 +220,6 @@
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>ID:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="leID"/>
-             </item>
              <item>
               <widget class="QLabel" name="lModel">
                <property name="text">
@@ -315,7 +330,9 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="commands"/>
+         <widget class="QWidget" name="command"/>
+         <widget class="QWidget" name="customModel"/>
+         <widget class="QWidget" name="element"/>
         </widget>
        </item>
       </layout>
@@ -366,7 +383,6 @@
   <tabstop>tree</tabstop>
   <tabstop>cmbItem</tabstop>
   <tabstop>cbMainForm</tabstop>
-  <tabstop>leID</tabstop>
   <tabstop>cmbModel</tabstop>
   <tabstop>tw</tabstop>
   <tabstop>rbH</tabstop>

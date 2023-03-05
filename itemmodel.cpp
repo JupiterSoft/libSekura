@@ -244,7 +244,7 @@ void ItemModel::success(const QJsonObject &obj) {
         emit connectInterface(resp["fields"]);
         // m_data["fields"] = mf;
         m_queries = resp["queries"].toList();
-
+        // emit initialized();
         reload();
     } else if (t == "insert") {
         emit setEnabled(true);

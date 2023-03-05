@@ -25,6 +25,9 @@ namespace Sekura {
         ModelFilter *filter() { return m_modelFilter; }
         void setFilter(ModelFilter *filter);
 
+        // public slots:
+        // void filled();
+
       signals:
         void appendWidget(Sekura::BaseWidget *);
         void parentReload();

@@ -12,10 +12,12 @@
 #include "foreignkey.h"
 #include "itemwidget.h"
 #include "lineedit.h"
+#include "listwidget.h"
 #include "menu.h"
 #include "modelfilter.h"
 #include "spinbox.h"
 #include "tablewidget.h"
+#include "text.h"
 #include "treewidget.h"
 
 #include <QCryptographicHash>
@@ -115,6 +117,8 @@ BaseItem *Interface::createItem(const QVariantMap &m, QWidget *parent) {
         ptr = le;
     } else if (type.left(7) == "Element") {
         ptr = new Element(0, parent);
+    } else if (type.left(4) == "Text") {
+        ptr = new Text(0, parent);
     }
     return ptr;
 }
@@ -150,7 +154,7 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc, Q
         mfilter = new ModelFilter;
         mf_created = true;
     }
-    if ((str == "Table") || (str == "Tree") || (str == "Item")) {
+    if ((str == "Table") || (str == "Tree") || (str == "Item") || (str == "List")) {
         /// установить настройки в фильтр
         mfilter->remove("temp");
         mfilter->setValue("temp", "model", desc["model"]);
@@ -170,12 +174,18 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc, Q
         } else if (str == "Item") {
             /// не фильтруется
             ret = new ItemWidget(mfilter, parent);
+        } else if (str == "List") {
+            /// не фильтруется
+            ret = new ListWidget(mfilter, parent);
         }
         if (ret != nullptr) {
             if (desc.contains("main"))
                 ret->setMainForm(true);
         }
     } else {
+        // if ((parent == nullptr) || (qobject_cast<BaseWidget *>(parent) == nullptr))
+        // else
+        //     ret = qobject_cast<BaseWidget *>(parent);
         ret = new BaseWidget(mfilter, parent);
         if (mfilter->contains("temp", "caption"))
             ret->setWindowTitle(mfilter->value("temp", "caption").toString());
@@ -185,13 +195,11 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc, Q
             QLayout *layout;
             if (direction == "H") {
                 layout = new QHBoxLayout(ret);
-                layout->setSpacing(0);
-                layout->setContentsMargins(5, 5, 5, 5);
             } else {
                 layout = new QVBoxLayout(ret);
-                layout->setSpacing(0);
-                layout->setContentsMargins(5, 5, 5, 5);
             }
+            layout->setSpacing(0);
+            layout->setContentsMargins(5, 5, 5, 5);
             foreach (QVariant v, desc["childs"].toList()) {
                 QVariantMap m = v.toMap();
                 BaseWidget *w = privateParseWidgets(mfilter, m, parent);
@@ -205,8 +213,13 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc, Q
                 }
             }
         } else if (str == "Splitter") {
+            QLayout *l;
+            l = new QHBoxLayout(ret);
+            l->setSpacing(0);
+            l->setContentsMargins(5, 5, 5, 5);
             QString direction = desc["direction"].toString();
             QSplitter *layout = new QSplitter(ret);
+            l->addWidget(layout);
             if (direction == "H") {
                 // layout = new QHBoxLayout(ret);
                 // layout->setSpacing(0);
