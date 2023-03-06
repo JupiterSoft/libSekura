@@ -14,19 +14,10 @@ namespace Sekura {
 
     class RestSettings;
     class RestClient;
-    class AuthDialog;
-    class TableModel;
+    class ModelFilter;
+    class Menu;
     class BaseItem;
     class BaseWidget;
-    class LineEdit;
-    class DateTimeEdit;
-    class ComboBox;
-    class SpinBox;
-    class TableWidget;
-    class ItemWidget;
-    class ItemModel;
-    class Menu;
-    class ModelFilter;
 
     typedef QMap<QString, QByteArray> QByteArrayMap;
 

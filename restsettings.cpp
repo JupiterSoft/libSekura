@@ -61,6 +61,7 @@ bool RestSettings::load(const QString &name) {
         stream >> key;
         stream >> m_data[key];
     }
+    stream >> m_path;
     return true;
 }
 
@@ -87,6 +88,7 @@ void RestSettings::save(const QString &name) {
         stream << it.key();
         stream << *it;
     }
+    stream << m_path;
     QSettings settings("JupiterSoft", "libSekura");
     settings.setValue(m_name, mCompress(array, false));
 }

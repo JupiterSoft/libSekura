@@ -7,6 +7,7 @@
 #define SEKURA_TABLEWIDGET_H
 
 #include "basewidget.h"
+#include "tablemodel.h"
 
 #include <QModelIndex>
 #include <QWidget>

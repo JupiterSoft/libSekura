@@ -129,6 +129,12 @@ add_library(
   text.cpp
   text.ui
   Text
+  mainwindow.h
+  mainwindow.cpp
+  mainwindow.ui
+  MainWindow
+  appobject.h
+  appobject.cpp
   resources.qrc)
 
 target_link_libraries(
