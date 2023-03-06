@@ -135,6 +135,11 @@ add_library(
   MainWindow
   appobject.h
   appobject.cpp
+  appObject
+  authwidget.h
+  authwidget.cpp
+  authwidget.ui
+  AuthWidget
   resources.qrc)
 
 target_link_libraries(

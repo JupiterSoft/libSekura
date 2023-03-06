@@ -39,6 +39,8 @@ bool RestSettings::load(const QString &name) {
     if (!name.isEmpty())
         m_name = name;
     QSettings settings("JupiterSoft", "libSekura");
+    if (m_name == "Default")
+        m_name = settings.value("Default").toString();
     if (!settings.contains(m_name))
         return false;
     QByteArray array = mCompress(settings.value(m_name).toByteArray(), true);

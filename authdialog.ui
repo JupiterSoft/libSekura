@@ -22,7 +22,7 @@
      <item>
       <widget class="QLabel" name="labelKey">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -33,6 +33,9 @@
       </widget>
      </item>
      <item>
+      <widget class="QLineEdit" name="leKey"/>
+     </item>
+     <item>
       <widget class="QPushButton" name="pbRequestKey">
        <property name="text">
         <string>Request</string>
@@ -40,9 +43,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="leKey"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
