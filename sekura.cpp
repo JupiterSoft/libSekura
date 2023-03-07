@@ -15,6 +15,7 @@
 #include "listwidget.h"
 #include "menu.h"
 #include "modelfilter.h"
+#include "reportwidget.h"
 #include "spinbox.h"
 #include "tablewidget.h"
 #include "text.h"
@@ -182,6 +183,10 @@ BaseWidget *privateParseWidgets(ModelFilter *mfilter, const QVariantMap &desc, Q
             if (desc.contains("main"))
                 ret->setMainForm(true);
         }
+    } else if (str == "Report") {
+        mfilter->remove("temp");
+        mfilter->setValue("temp", "report", desc["report"]);
+        ret = new ReportWidget(mfilter, parent);
     } else {
         // if ((parent == nullptr) || (qobject_cast<BaseWidget *>(parent) == nullptr))
         // else

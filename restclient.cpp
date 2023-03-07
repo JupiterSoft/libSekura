@@ -19,7 +19,7 @@ using namespace Sekura;
  * \param parent - родительский объект
  */
 RestClient::RestClient(QObject *parent) : QObject(parent) {
-    m_settings = nullptr;
+    m_settings = Interface::settings();
     m_manager = new QNetworkAccessManager(this);
 }
 
