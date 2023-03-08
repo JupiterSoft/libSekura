@@ -93,5 +93,8 @@
         <file>images/091-flag.png</file>
         <file>images/092-print.png</file>
         <file>images/093-clock.png</file>
+        <file>html/datatables.min.css</file>
+        <file>html/datatables.min.js</file>
+        <file>html/report.html</file>
     </qresource>
 </RCC>

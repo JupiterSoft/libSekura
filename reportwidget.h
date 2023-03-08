@@ -8,6 +8,7 @@
 
 #include "basewidget.h"
 
+#include <QWebEngineView>
 #include <QWidget>
 
 namespace Sekura {
@@ -34,6 +35,7 @@ namespace Sekura {
         Ui::ReportWidget *ui;
         RestClient *m_client;
         QVariantMap m_report;
+        QWebEngineView *m_view;
     };
 
 } // namespace Sekura
