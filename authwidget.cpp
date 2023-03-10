@@ -30,6 +30,7 @@ void AuthWidget::cmb_index(int a) {
     m_settings.load(ui->comboBox->currentText());
     ui->leName->setText(ui->comboBox->currentText());
     ui->lePath->setText(m_settings.path().remove("/sekura/api/v1.0"));
+    qDebug() << m_settings.headerValue("sekura-application");
     ui->leApp->setText(m_settings.headerValue("sekura-application"));
     ui->cbAuth->setChecked(m_settings.headers().contains("Authorization"));
     QSettings settings("JupiterSoft", "libSekura");
@@ -41,6 +42,7 @@ void AuthWidget::cmb_index(int a) {
 
 void AuthWidget::pb_save() {
     m_settings.setPath(ui->lePath->text() + "/sekura/api/v1.0");
+    m_settings.removeHeaderValue("sekura-application");
     m_settings.setHeaderValue("sekura-application", ui->leApp->text().toUtf8());
     if (ui->cbDefault->isChecked()) {
         QSettings settings("JupiterSoft", "libSekura");
@@ -52,6 +54,10 @@ void AuthWidget::pb_save() {
 }
 
 void AuthWidget::pb_auth() {
+    m_settings.removeHeaderValue("Authorization");
+    m_settings.setPath(ui->lePath->text() + "/sekura/api/v1.0");
+    m_settings.removeHeaderValue("sekura-application");
+    m_settings.setHeaderValue("sekura-application", ui->leApp->text().toUtf8());
     AuthDialog *ptr = new AuthDialog(&m_settings);
     if (ptr->exec() == QDialog::Accepted) {
         ui->cbAuth->setChecked(m_settings.headers().contains("Authorization"));
