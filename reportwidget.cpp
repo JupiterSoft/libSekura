@@ -26,7 +26,7 @@ ReportWidget::ReportWidget(ModelFilter *filter, QWidget *parent)
     m_view = new QWebEngineView(this);
     ui->reportWidgetLayout->addWidget(m_view);
 
-    resize(800, 600);
+    // resize(800, 600);
 
     reload();
 }
@@ -74,6 +74,7 @@ void ReportWidget::success(const QJsonObject &obj) {
             // file1.write(x.toUtf8());
             temp += x;
         }
+
         // file1.write("];");
         temp += "];";
         // file1.write(u8R"($(document).ready(function () {
@@ -82,7 +83,8 @@ void ReportWidget::success(const QJsonObject &obj) {
         temp += u8R"($(document).ready(function () {
             $('#example').DataTable({data: dataSet,columns: [{title:'ID'},{title:'Name'}]});
         });)";
-        // file1.close();
+
+        //  file1.close();
         html = html.replace("$temp$", temp);
         // qDebug() << html;
         m_view->setHtml(html);
