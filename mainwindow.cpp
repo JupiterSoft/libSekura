@@ -6,7 +6,6 @@
 #include "mainwindow.h"
 #include "basewidget.h"
 #include "menu.h"
-#include "restsettings.h"
 #include "ui_mainwindow.h"
 
 #include <QMdiSubWindow>
@@ -14,15 +13,9 @@
 
 using namespace Sekura;
 
-MainWindow::MainWindow(const QString &conf, QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), m_conf(conf) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     ui->mdiArea->setActivationOrder(QMdiArea::ActivationHistoryOrder);
-    m_settings = new RestSettings(this);
-    if (!m_settings->load(m_conf)) {
-        m_error = true;
-    }
-    Sekura::Interface::setSettings(m_settings);
     Menu *menu = Interface::createMenu(ui->menubar, this);
     connect(menu, &Menu::childCreated, this, &MainWindow::appendWidget);
 }

@@ -20,10 +20,10 @@ using namespace Sekura;
  * \param requestKeyButton - активировать кнопку запрашивать ключ
  * \param parent - родитель
  */
-AuthDialog::AuthDialog(RestSettings *settings, bool requestKeyButton, QWidget *parent)
-    : QDialog(parent), ui(new Ui::AuthDialog), m_settings(settings) {
+AuthDialog::AuthDialog(bool requestKeyButton, QWidget *parent)
+    : QDialog(parent), ui(new Ui::AuthDialog), m_settings(Interface::settings()) {
     ui->setupUi(this);
-    m_client = new RestClient(settings);
+    m_client = new RestClient;
     connect(m_client, &RestClient::success, this, &AuthDialog::success);
     connect(m_client, &RestClient::error, this, &AuthDialog::error);
     if (requestKeyButton) {

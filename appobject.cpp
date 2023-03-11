@@ -4,19 +4,12 @@
  * Company: Jupiter Soft
  */
 #include "appobject.h"
-#include "restsettings.h"
 
 #include <QFile>
 
 namespace Sekura {
 
-    appObject::appObject(const QString &str, QObject *parent) : QObject{parent}, m_conf(str) {
-        m_settings = new RestSettings(this);
-        if (!m_settings->load(m_conf)) {
-            m_error = true;
-        }
-        Sekura::Interface::setSettings(m_settings);
-    }
+    appObject::appObject(QObject *parent) : QObject{parent} {}
 
     BaseWidget *appObject::loadFromFile(const QString &str) {
         QFile file(str);

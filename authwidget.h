@@ -31,7 +31,7 @@ namespace Sekura {
 
       private:
         Ui::AuthWidget *ui;
-        RestSettings m_settings;
+        RestSettings *m_settings;
 
         void reload();
     };

@@ -22,8 +22,7 @@ namespace Sekura {
         Q_OBJECT
 
       public:
-        explicit AuthDialog(RestSettings *settings, bool requestKeyButton = false,
-                            QWidget *parent = nullptr);
+        explicit AuthDialog(bool requestKeyButton = false, QWidget *parent = nullptr);
         ~AuthDialog();
 
       public slots:

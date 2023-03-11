@@ -20,20 +20,14 @@ namespace Sekura {
         Q_OBJECT
 
       public:
-        explicit MainWindow(const QString &conf, QWidget *parent = nullptr);
+        explicit MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
-
-        bool isError() const { return m_error; }
 
       public slots:
         void appendWidget(Sekura::BaseWidget *widget);
 
       private:
         Ui::MainWindow *ui;
-
-        QString m_conf;
-        RestSettings *m_settings;
-        bool m_error;
     };
 
 } // namespace Sekura

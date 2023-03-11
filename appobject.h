@@ -15,21 +15,14 @@ namespace Sekura {
     class appObject : public QObject {
         Q_OBJECT
       public:
-        explicit appObject(const QString &str, QObject *parent = nullptr);
+        explicit appObject(QObject *parent = nullptr);
 
         BaseWidget *loadFromFile(const QString &str);
-
-        bool isError() const { return m_error; }
 
       signals:
 
       public slots:
         void startWidget(Sekura::BaseWidget *ptr);
-
-      private:
-        QString m_conf;
-        RestSettings *m_settings;
-        bool m_error;
     };
 
 } // namespace Sekura

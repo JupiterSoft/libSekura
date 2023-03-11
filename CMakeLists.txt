@@ -145,6 +145,10 @@ add_library(
   reportwidget.cpp
   reportwidget.ui
   ReportWidget
+  systemcommandwidget.cpp
+  systemcommandwidget.h
+  systemcommandwidget.ui
+  SystemCommandWidget
   resources.qrc)
 
 target_link_libraries(
