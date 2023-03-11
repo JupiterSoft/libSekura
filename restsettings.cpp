@@ -174,7 +174,7 @@ void RestSettings::setSslConfig(QSslConfiguration *newSslConfig) {
  * \param direct - направление true сжатие/зашифровка, fals распаковка/расшифровка
  * \return возвращает обработанный массив
  */
-QByteArray RestSettings::mCompress(const QByteArray &arr, bool direct) {
+QByteArray RestSettings::mCompress(const QByteArray &arr, bool direct) const {
     if (direct)
         return qUncompress(arr);
     return qCompress(arr);

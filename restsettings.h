@@ -51,14 +51,15 @@ namespace Sekura {
 
         void sslConfigChanged();
 
+      protected:
+        virtual QByteArray mCompress(const QByteArray &arr, bool direct = false) const;
+
       private:
         QString m_path;
         QByteArrayMap m_headers;
         QByteArrayMap m_data;
         QString m_name;
         QSslConfiguration *m_sslConfig = nullptr;
-
-        virtual QByteArray mCompress(const QByteArray &arr, bool direct = false);
     };
 
     /*

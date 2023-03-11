@@ -149,6 +149,9 @@ add_library(
   systemcommandwidget.h
   systemcommandwidget.ui
   SystemCommandWidget
+  cryptsettings.h
+  cryptsettings.cpp
+  CryptSettings
   resources.qrc)
 
 target_link_libraries(
