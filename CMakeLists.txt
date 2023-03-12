@@ -17,6 +17,14 @@ if(APPLE)
   set(OPENSSL_ROOT_DIR "/opt/homebrew/opt/openssl")
 endif()
 
+if(WIN32)
+  set(OPENSSL_ROOT_DIR "c:/Qt/Tools/OpenSSL/Win_x64/")
+  # find_package(OpenSSL)
+  # message(${OPENSSL_ROOT_DIR} ${OPENSSL_CRYPTO_LIBRARY})
+  # set(OpenSSL_LIB1 "c:/Data/prj/SekuraOSSL/libcrypto.lib") set(OpenSSL_LIB2
+  # "c:/Data/prj/SekuraOSSL/libssl.lib")
+endif()
+
 find_package(OpenSSL)
 
 message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
